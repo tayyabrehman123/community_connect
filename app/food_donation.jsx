@@ -70,9 +70,10 @@ const FoodDonation = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
+    
         <View>
           <Text style={styles.headerTitle}>Donate & Request</Text>
-          <Text style={styles.headerSubtitle}>Share resources with the community</Text>
+          <Text style={styles.headerSubtitle}>Shares resources with the community</Text>
         </View>
         <TouchableOpacity style={styles.addButton}>
           <Ionicons name="add" size={24} color="#fff" />
