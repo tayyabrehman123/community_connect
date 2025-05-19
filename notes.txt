@@ -1,0 +1,428 @@
+index.jsx
+
+import React from "react";
+import { View, TextInput, Text, StyleSheet , ScrollView , Image } from "react-native";
+import { Link } from 'expo-router';
+import { Ionicons } from "@expo/vector-icons";
+import { Card, Button } from 'react-native-paper';
+const Home = () => {
+  return (
+    
+  <ScrollView>
+    <View style = {styles.screen}>
+      <View style={styles.container}>
+        <Ionicons name="search" size={20} color="gray" style={styles.icon} />
+        <TextInput
+        style={styles.input}
+        placeholder="Search"
+        placeholderTextColor="gray"
+        />
+      </View>
+      
+      <View style={{ marginTop: 20 }}>
+        {/* styles.containers */}
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text variant="titleLarge" style = {styles.title}>Shelters Near You</Text>
+          <Text variant="bodyMedium" style={styles.subtitle}>
+            Find nearby shelters with available space.
+          </Text>
+        </Card.Content>
+        <Card.Actions style={styles.actions}>
+          <View style={{ flex: 1, alignItems: "flex-start" }}>
+            <Button mode="contained" style = {styles.buttons} onPress={() => console.log('Searching...')}>
+            Search
+          </Button>
+          </View>
+        </Card.Actions>
+      </Card>
+    </View>
+    
+    <View style={{ marginTop: 20 }}>
+        {/* styles.containers */}
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text variant="titleLarge" style = {styles.title}>Foodbanks Near You</Text>
+          <Text variant="bodyMedium" style={styles.subtitle}>
+            Find nearby shelters with available space.
+          </Text>
+        </Card.Content>
+        <Card.Actions style={styles.actions}>
+          <View style={{ flex: 1, alignItems: "flex-start" }}>
+            <Button mode="contained" style = {styles.buttons} onPress={() => console.log('Searching...')}>
+            Search
+          </Button>
+          </View>
+        </Card.Actions>
+      </Card>
+    </View>
+    
+    <View style={{ marginTop: 20 }}>
+        {/* styles.containers */}
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text variant="titleLarge" style = {styles.title}>Find jobs Near You</Text>
+          <Text variant="bodyMedium" style={styles.subtitle}>
+            Find nearby shelters with available space.
+          </Text>
+        </Card.Content>
+        <Card.Actions style={styles.actions}>
+          <View style={{ flex: 1, alignItems: "flex-start" }}>
+            <Button mode="contained" style = {styles.buttons} onPress={() => console.log('Searching...')}>
+            Search
+          </Button>
+          </View>
+        </Card.Actions>
+      </Card>
+    </View>
+    
+    <View style={{ marginTop: 20 }}>
+        {/* styles.containers */}
+      <Card style={styles.card}>
+        <Card.Content>
+          <Text variant="titleLarge" style = {styles.title} >Food donation</Text>
+          <Text variant="bodyMedium" style={styles.subtitle}>
+            Find nearby shelters with available space.
+          </Text>
+        </Card.Content>
+        <Card.Actions style={styles.actions}>
+          <View style={{ flex: 1, alignItems: "flex-start" }}>
+            <Button mode="contained" style = {styles.buttons} onPress={() => console.log('Searching...')}>
+            Search
+          </Button>
+          </View>
+        </Card.Actions>
+      </Card>
+    </View>
+    
+    <View style={{ marginTop: 20 }}>
+        {/* styles.containers */}
+      <Card style={styles.card}>
+        <Card.Content style = {styles.row}>
+        <View style={styles.textContainer}>
+          <Text variant="titleLarge" style = {styles.title} >Food donation</Text>
+          <Text variant="bodyMedium" style={styles.subtitle}>
+            Find nearby shelters with available space.
+          </Text>
+          <Button mode="contained" style = {styles.buttons} onPress={() => console.log('Searching...')}>
+            Search
+          </Button>
+          </View>
+          <Image source={require("../assets/donation.jpg")} style={styles.image} />
+          </Card.Content>
+      </Card>
+    </View>
+      {/* flex: 1, alignItems: "flex-start" */}
+      
+      
+      
+      {/* <View style={styles.signupContainer}> */}
+        {/* <Text style={styles.signupText}>Don't have an account?</Text> */}
+          {/* Navigate to Sign Up page using Link */}
+          {/* <Link href="/signup"> */}
+            {/* <Text style={styles.signupLink}> Sign Up here</Text> */}
+          {/* </Link> */}
+      {/* </View> */}
+      
+    </View>
+  </ScrollView>
+  )
+}
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1, //Takes full screen height
+    backgroundColor: "#ffffff", //Whole screen is now white
+    alignItems: "center", //Center content horizontally
+  },
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#e7e7e7",
+    borderRadius: 24,
+    paddingHorizontal: 26,
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 20,
+    height: 50,
+    elevation: 4,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: "#333",
+  },
+  card: {
+    width: 320,
+    elevation: 4, // Adds shadow
+    borderRadius: 24,
+    backgroundColor: "#e7e7e7",
+    // padding: 5,
+  },
+  subtitle: {
+    marginTop: 5,
+    marginBottom: 10,
+    width: 200,
+    color: '#555',
+  },
+  actions: {
+    //justifyContent: "flex-start", // Aligns button to the left side
+    //paddingHorizontal: 10,
+    width: "100%", // Ensures the button takes full width
+    paddingHorizontal: 10, // Adds some spacing from the edges
+  },
+  title: {
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+  buttons:
+  {
+    width: 200,
+    alignSelf: "flex-start",
+    backgroundColor: "#006FFD",
+  },
+  row:
+  {
+    flexDirection: "row", // Arrange content in a row
+    alignItems: "center", // Align items vertically in center
+    justifyContent: "space-between", // Push text and image to opposite sides
+  },
+  image: {
+    width: 80, // Adjust size as needed
+    height: 110,
+    borderRadius: 10,
+    marginLeft: "", // Moves image to the extreme right
+    alignSelf: "flex-end", // Aligns image to the bottom right
+    // resizeMode: "contain",
+  },
+  textContainer: {
+    flex: 1, // Takes most of the space on the left
+  },
+});
+
+export default Home
+--------------------------
+shelter.jsx
+
+import { View, Text, StyleSheet } from 'react-native'
+import React from 'react'
+import { Appbar } from 'react-native-paper';
+import { Ionicons, AntDesign } from '@expo/vector-icons'
+
+const shelter = () => {
+  return (
+    // <View styles={styles.screen}>
+    // <Appbar.Header style={styles.header}>
+      // {/* Left: Back Arrow */}
+      // <Appbar.Action 
+        // icon={() => <AntDesign name="left" size={24} color="black" />} 
+        // onPress={() => router.back()} 
+      // />
+
+      // {/* Center: Title */}
+      // <Appbar.Content title="Shelter" titleStyle={styles.title} />
+
+      // {/* Right: Person Icon (Properly Sized & Unconstrained) */}
+      // <View style={styles.iconWrapper}>
+        // <Ionicons name="person" size={24} color="#B3DAFF" />
+    //  </View>
+    // </Appbar.Header>
+    // </View>
+    
+    <View className="flex-1 bg-white">
+    <Appbar.Header className="bg-white flex-row items-center justify-between shadow-md px-2">
+      {/* Left: Back Arrow */}
+      <Appbar.Action 
+        icon={() => <AntDesign name="left" size={24} color="black" />} 
+        onPress={() => router.back()} 
+      />
+
+      {/* Center: Title */}
+      <Appbar.Content title="Shelters" titleStyle={{ fontSize: 18, fontWeight: 'bold', textAlign: 'center' }} />
+
+      {/* Right: Person Icon */}
+      <View className="bg-[#EAF2FF] w-12 h-12 rounded-full flex items-center justify-center mr-3">
+        <Ionicons name="person" size={24} color="#B3DAFF" />
+      </View>
+    </Appbar.Header>
+  </View>
+  );
+};
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1, //Takes full screen height
+    backgroundColor: "#ffffff", //Whole screen is now white
+    alignItems: "center", //Center content horizontally
+  },
+  header: {
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    elevation: 4, // Adds slight shadow for better visibility
+  },
+  iconWrapper: {
+    backgroundColor: '#EAF2FF', // Updated background color
+    borderRadius: 20,
+    width: 50, // Fixed width
+    height: 50, // Fixed height
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 13,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+});
+
+export default shelter
+
+
+
+
+
+------------------------------------
+
+
+
+
+<ScrollView>
+    <View style = {styles.screen}>
+      <View className="flex-row items-center bg-[#e7e7e7] rounded-3xl px-6 mx-5 mt-5 h-[50px] shadow-md">
+            <Ionicons name="search" size={20} color="gray" className="mr-3" />
+            <TextInput 
+              className="flex-1 text-[16px] text-gray-800" 
+              placeholder="Search" 
+              placeholderTextColor="gray" 
+            />
+          </View>
+    
+      <View style={{ marginTop: 20 }}>
+        {/* styles.containers */}
+      <Card style={styles.card}>
+        <Card.Content style = {styles.row}>
+        <View style={styles.textContainer}>
+          <Text variant="titleLarge" style = {styles.title} >Shelters near you</Text>
+          <Text variant="bodyMedium" style={styles.subtitle}>
+            Find nearby shelters with available space.
+          </Text>
+          <Button mode="contained" style = {styles.buttons} onPress={() => router.push('/shelter')}>
+            Search
+          </Button>
+          </View>
+          <Image source={require("../assets/shelter.jpg")} style={styles.image} />
+          </Card.Content>
+      </Card>
+    </View>
+    
+    <View style={{ marginTop: 20 }}>
+        {/* styles.containers */}
+      <Card style={styles.card}>
+        <Card.Content style = {styles.row}>
+        <View style={styles.textContainer}>
+          <Text variant="titleLarge" style = {styles.title} >FoodBanks near you</Text>
+          <Text variant="bodyMedium" style={styles.subtitle}>
+            Find nearby available foodbanks.
+          </Text>
+          <Button mode="contained" style = {styles.buttons} onPress={() => router.push('/foodbank')}>
+            Search
+          </Button>
+          </View>
+          <Image source={require("../assets/foodbanks.jpg")} style={styles.image} />
+          </Card.Content>
+      </Card>
+    </View>
+    
+    <View style={{ marginTop: 20 }}>
+        {/* styles.containers */}
+      <Card style={styles.card}>
+        <Card.Content style = {styles.row}>
+        <View style={styles.textContainer}>
+          <Text variant="titleLarge" style = {styles.title} >Find Jobs near you</Text>
+          <Text variant="bodyMedium" style={styles.subtitle}>
+            Find jobs according to your skills available.
+          </Text>
+          <Button mode="contained" style = {styles.buttons} onPress={() => router.push('/job_recomand')}>
+            Search
+          </Button>
+          </View>
+          <Image source={require("../assets/jobfinder.jpg")} style={styles.image} />
+          </Card.Content>
+      </Card>
+    </View>
+      
+    
+    <View style={{ marginTop: 20 }}>
+        {/* styles.containers */}
+      <Card style={styles.card}>
+        <Card.Content style = {styles.row}>
+        <View style={styles.textContainer}>
+          <Text variant="titleLarge" style = {styles.title} >Food donation</Text>
+          <Text variant="bodyMedium" style={styles.subtitle}>
+            Donate food for the people in need.
+          </Text>
+          <Button mode="contained" style = {styles.buttons} onPress={() => router.push('/food_donation')}>
+            Search
+          </Button>
+          </View>
+          <Image source={require("../assets/donation.jpg")} style={styles.image} />
+          </Card.Content>
+      </Card>
+    </View>
+  
+    </View>
+  </ScrollView>
+  )
+}
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1, //Takes full screen height
+    backgroundColor: "#ffffff", //Whole screen is now white
+    alignItems: "center", //Center content horizontally
+  },
+  card: {
+    width: 320,
+    elevation: 4, // Adds shadow
+    borderRadius: 24,
+    backgroundColor: "#e7e7e7",
+    //padding: 5,
+  },
+  subtitle: {
+    marginTop: 5,
+    marginBottom: 10,
+    width: 200,
+    color: '#555',
+  },
+  
+  title: {
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+  buttons:
+  {
+    width: 200,
+    alignSelf: "flex-start",
+    backgroundColor: "#006FFD",
+    borderRadius: 12,
+  },
+  row:
+  {
+    flexDirection: "row", // Arrange content in a row
+    //alignItems: "center", // Align items vertically in center
+    //justifyContent: "space-between", // Push text and image to opposite sides
+  },
+  image: {
+    width: 80, // Adjust size as needed
+    height: 110,
+    borderRadius: 10,
+    marginLeft: "", // Moves image to the extreme right
+    alignSelf: "flex-end", // Aligns image to the bottom right
+    // resizeMode: "contain",
+  },
+  textContainer: {
+    flex: 1, // Takes most of the space on the left
+  },
+});
