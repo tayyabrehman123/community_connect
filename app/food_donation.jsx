@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import DonationCard from './_components/DonationCard';
+import DonationCard from '../components/DonationCard';
 
 const FoodDonation = () => {
   const [activeType, setActiveType] = useState('all');
@@ -24,31 +24,31 @@ const FoodDonation = () => {
   const donations = [
     {
       id: 1,
-      title: "Canned Food Items",
-      description: "Various canned vegetables, soups, and beans. All unexpired.",
+      title: "Dry Food Items",
+      description: "Various rice, pulses, and flour. All unexpired and sealed.",
       type: "offer",
-      location: "Downtown",
-      contact: "555-123-4567",
+      location: "Gulberg, Lahore",
+      contact: "0300-123-4567",
       date: "Today",
       imageUrl: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=300&h=200"
     },
     {
       id: 2,
-      title: "Winter Jackets Needed",
-      description: "In need of winter jackets for adults. Any size welcome.",
+      title: "Winter Clothes Needed",
+      description: "In need of winter clothes for children. Any size welcome.",
       type: "need",
-      location: "Southside",
-      contact: "help@shelter.org",
+      location: "Karachi Central",
+      contact: "help@pakistanrelief.org",
       date: "2 days ago",
       imageUrl: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&q=80&w=300&h=200"
     },
     {
       id: 3,
-      title: "Personal Hygiene Kits",
-      description: "Offering 10 hygiene kits with toothbrush, toothpaste, soap, etc.",
+      title: "Ramadan Food Packages",
+      description: "Offering 10 Ramadan food packages with dates, flour, oil, and other essentials.",
       type: "offer",
-      location: "Westside",
-      contact: "555-987-6543",
+      location: "Islamabad",
+      contact: "0300-987-6543",
       date: "1 week ago"
     },
     {
@@ -56,8 +56,8 @@ const FoodDonation = () => {
       title: "Baby Formula Needed",
       description: "Urgently need baby formula for 6-month old infant.",
       type: "need",
-      location: "Eastside",
-      contact: "555-789-0123",
+      location: "Peshawar",
+      contact: "0300-789-0123",
       date: "3 days ago"
     }
   ];
@@ -72,7 +72,7 @@ const FoodDonation = () => {
       <View style={styles.header}>
     
         <View>
-          <Text style={styles.headerTitle}>Donate & Request</Text>
+          <Text style={styles.headerTitle}>Donate & Requests</Text>
           <Text style={styles.headerSubtitle}>Shares resources with the community</Text>
         </View>
         <TouchableOpacity style={styles.addButton}>
@@ -194,17 +194,17 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#e7e7e7',
     marginHorizontal: 20,
     marginTop: 10,
-    borderRadius: 12,
+    borderRadius: 24,
     paddingHorizontal: 12,
     height: 50,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 5,
   },
   searchIcon: {
     marginRight: 8,

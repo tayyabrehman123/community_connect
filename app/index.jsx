@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TextInput, Text, ScrollView, Image } from "react-native";
+import { View, TextInput, Text, ScrollView, Image, StyleSheet, Touchable } from "react-native";
 import { useRouter } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
 import { Card, Button } from 'react-native-paper';
@@ -8,35 +8,35 @@ const Home = () => {
   const router = useRouter();
   
   return (
-    <ScrollView className="bg-[#006FFD]">
-      <View className="ml-5 mb-1 mt-6 pb-5">
-        <Text className="text-2xl font-bold text-white">Community Connect</Text>
-        <Text className="text-white">Support for everyone in need</Text>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Community Connect</Text>
+        <Text style={styles.headerSubtitle}>Support for everyone in need</Text>
       </View>
       
-      <View className="flex-1 bg-white items-center">
-        <View className="flex-row items-center bg-[#e7e7e7] rounded-3xl px-6 mx-5 mt-5 h-[50px] shadow-md">
-          <Ionicons name="search" size={20} color="gray" className="mr-3" />
+      <View style={styles.content}>
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={20} color="gray" style={styles.searchIcon} />
           <TextInput 
-            className="flex-1 text-[16px] text-gray-800" 
+            style={styles.searchInput}
             placeholder="Search" 
             placeholderTextColor="gray" 
           />
         </View>
           
-        <Text className="text-lg font-bold text-gray-800 mt-5 mr-[230px]">Services</Text>
+        <Text style={styles.sectionTitle}>Services</Text>
     
-        <View className="mt-2.5">
-          <Card className="w-80 rounded-3xl bg-[#e7e7e7] shadow-md">
-            <Card.Content className="flex-row">
-              <View className="flex-1">
-                <Text className="text-base font-bold">Shelters near you</Text>
-                <Text className="mt-1 mb-2.5 w-48 text-gray-600">
+        <View style={styles.cardContainer}>
+          <Card style={styles.card}>
+            <Card.Content style={styles.cardContent}>
+              <View style={styles.cardTextContainer}>
+                <Text style={styles.cardTitle}>Shelters near you</Text>
+                <Text style={styles.cardSubtitle}>
                   Find nearby shelters with available space.
                 </Text>
                 <Button 
                   mode="contained" 
-                  className="w-48 bg-[#006FFD] rounded-xl" 
+                  style={styles.button}
                   onPress={() => router.push('/shelter')}
                 >
                   Search
@@ -44,23 +44,23 @@ const Home = () => {
               </View>
               <Image 
                 source={require("../assets/shelter.jpg")} 
-                className="w-20 h-28 rounded-lg self-end" 
+                style={styles.cardImage}
               />
             </Card.Content>
           </Card>
         </View>
 
-        <View className="mt-5">
-          <Card className="w-80 rounded-3xl bg-[#e7e7e7] shadow-md">
-            <Card.Content className="flex-row">
-              <View className="flex-1">
-                <Text className="text-base font-bold">FoodBanks near you</Text>
-                <Text className="mt-1 mb-2.5 w-48 text-gray-600">
+        <View style={styles.cardContainer}>
+          <Card style={styles.card}>
+            <Card.Content style={styles.cardContent}>
+              <View style={styles.cardTextContainer}>
+                <Text style={styles.cardTitle}>FoodBanks near you</Text>
+                <Text style={styles.cardSubtitle}>
                   Find nearby available foodbanks.
                 </Text>
                 <Button 
                   mode="contained" 
-                  className="w-48 bg-[#006FFD] rounded-xl" 
+                  style={styles.button}
                   onPress={() => router.push('/foodbank')}
                 >
                   Search
@@ -68,23 +68,23 @@ const Home = () => {
               </View>
               <Image 
                 source={require("../assets/foodbanks.jpg")} 
-                className="w-20 h-28 rounded-lg self-end" 
+                style={styles.cardImage}
               />
             </Card.Content>
           </Card>
         </View>
 
-        <View className="mt-5">
-          <Card className="w-80 rounded-3xl bg-[#e7e7e7] shadow-md">
-            <Card.Content className="flex-row">
-              <View className="flex-1">
-                <Text className="text-base font-bold">Find Jobs near you</Text>
-                <Text className="mt-1 mb-2.5 w-48 text-gray-600">
+        <View style={styles.cardContainer}>
+          <Card style={styles.card}>
+            <Card.Content style={styles.cardContent}>
+              <View style={styles.cardTextContainer}>
+                <Text style={styles.cardTitle}>Find Jobs near you</Text>
+                <Text style={styles.cardSubtitle}>
                   Find jobs according to your skills available.
                 </Text>
                 <Button 
                   mode="contained" 
-                  className="w-48 bg-[#006FFD] rounded-xl" 
+                  style={styles.button}
                   onPress={() => router.push('/job_recomand')}
                 >
                   Search
@@ -92,23 +92,23 @@ const Home = () => {
               </View>
               <Image 
                 source={require("../assets/jobfinder.jpg")} 
-                className="w-20 h-28 rounded-lg self-end" 
+                style={styles.cardImage}
               />
             </Card.Content>
           </Card>
         </View>
 
-        <View className="mt-5 mb-5">
-          <Card className="w-80 rounded-3xl bg-[#e7e7e7] shadow-md">
-            <Card.Content className="flex-row">
-              <View className="flex-1">
-                <Text className="text-base font-bold">Food donation</Text>
-                <Text className="mt-1 mb-2.5 w-48 text-gray-600">
+        <View style={styles.cardContainer}>
+          <Card style={styles.card}>
+            <Card.Content style={styles.cardContent}>
+              <View style={styles.cardTextContainer}>
+                <Text style={styles.cardTitle}>Food donation</Text>
+                <Text style={styles.cardSubtitle}>
                   Donate food for the people in need.
                 </Text>
                 <Button 
                   mode="contained" 
-                  className="w-48 bg-[#006FFD] rounded-xl" 
+                  style={styles.button}
                   onPress={() => router.push('/food_donation')}
                 >
                   Search
@@ -116,15 +116,119 @@ const Home = () => {
               </View>
               <Image 
                 source={require("../assets/donation.jpg")} 
-                className="w-20 h-28 rounded-lg self-end" 
+                style={styles.cardImage}
               />
             </Card.Content>
           </Card>
         </View>
+        
+          
       </View>
+      
+      
+      <View className="flex-1 items-center bg-blue-850 p-4">
+          <Text className="text-lg font-bold text-black-500">Hello World</Text>
+      </View>
+      
+      
+      
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#006FFD',
+  },
+  header: {
+    marginLeft: 20,
+    marginBottom: 8,
+    marginTop: 24,
+    paddingBottom: 20,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  headerSubtitle: {
+    color: '#FFFFFF',
+  },
+  content: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e7e7e7',
+    marginHorizontal: 20,
+    marginTop: 20,
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    height: 50,
+    width: '90%',
+    elevation: 5,
+  },
+  searchIcon: {
+    marginRight: 12,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 20,
+    marginRight: 'auto',
+    marginLeft: 20,
+  },
+  cardContainer: {
+    marginTop: 10,
+    width: '100%',
+    alignItems: 'center',
+  },
+  card: {
+    width: '90%',
+    borderRadius: 24,
+    backgroundColor: '#e7e7e7',
+    marginBottom: 5,
+  },
+  cardContent: {
+    flexDirection: 'row',
+    padding: 16,
+  },
+  cardTextContainer: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  cardSubtitle: {
+    marginTop: 4,
+    marginBottom: 10,
+    width: '80%',
+    color: '#666',
+  },
+  button: {
+    width: '80%',
+    backgroundColor: '#006FFD',
+    borderRadius: 12,
+  },
+  cardImage: {
+    width: 80,
+    height: 112,
+    borderRadius: 8,
+    alignSelf: 'flex-end',
+  },
+});
 
 export default Home;
 

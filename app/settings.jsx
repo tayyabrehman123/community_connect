@@ -1,5 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { ChevronRight, User, Lock, Globe, Bell, BookmarkCheck, Shield, Trash2 } from 'lucide-react-native';
 
@@ -103,16 +102,16 @@ const styles = StyleSheet.create({
       },
       header: {
         padding: 20,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#006FFD',
       },
       title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#000000',
+        color: '#FFFFFF',
       },
       subtitle: {
         fontSize: 16,
-        color: '#666666',
+        color: '#FFFFFF',
         marginTop: 4,
       },
       settingsList: {

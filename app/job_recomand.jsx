@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import JobCard from './components/JobCard';
+import JobCard from '../components/JobCard';
 
 const job_recomand = () => {
   const [activeFilter, setActiveFilter] = useState('recommended');
@@ -17,20 +17,20 @@ const job_recomand = () => {
   const jobs = [
     {
       id: 1,
-      title: "Delivery Driver",
-      company: "Local Eats",
-      location: "Downtown, 1.5 miles away",
-      salary: "$18/hour",
+      title: "Delivery Rider",
+      company: "FoodPanda Pakistan",
+      location: "Gulberg, Lahore - 2.5 km away",
+      salary: "PKR 35,000/month",
       postedTime: "3 hours ago",
       matchScore: 92,
-      skills: ["Driving", "Flexible hours"]
+      skills: ["Motorcycle License", "Flexible hours"]
     },
     {
       id: 2,
-      title: "Warehouse Associate",
-      company: "QuickShip Logistics",
-      location: "Industrial District, 2.3 miles away",
-      salary: "$17/hour",
+      title: "Warehouse Assistant",
+      company: "Daraz Logistics",
+      location: "Port Qasim, Karachi - 3.2 km away",
+      salary: "PKR 30,000/month",
       postedTime: "1 day ago",
       matchScore: 85,
       skills: ["Loading", "Unloading", "Inventory"]
@@ -38,19 +38,19 @@ const job_recomand = () => {
     {
       id: 3,
       title: "Restaurant Server",
-      company: "The Family Table",
-      location: "Uptown, 0.8 miles away",
-      salary: "$15/hour + tips",
+      company: "Butt Karahi House",
+      location: "Blue Area, Islamabad - 1.8 km away",
+      salary: "PKR 25,000/month + tips",
       postedTime: "2 days ago",
       matchScore: 78,
       skills: ["Customer service", "Food handling"]
     },
     {
       id: 4,
-      title: "Cleaning Staff",
-      company: "CleanPros",
-      location: "Various locations",
-      salary: "$16/hour",
+      title: "Office Cleaner",
+      company: "CleanPro Services",
+      location: "Defence, Karachi",
+      salary: "PKR 28,000/month",
       postedTime: "3 days ago",
       matchScore: 76,
       skills: ["Cleaning", "Flexible schedule"]
@@ -60,7 +60,7 @@ const job_recomand = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Find Work</Text>
+        <Text style={styles.headerTitle}>Find Works</Text>
         <Text style={styles.headerSubtitle}>Jobs matching your skills and location</Text>
       </View>
       
@@ -77,7 +77,7 @@ const job_recomand = () => {
       </View>
       
       <ScrollView 
-        horizontal 
+        horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.filtersContainer}
       >
@@ -156,17 +156,17 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#e7e7e7',
     marginHorizontal: 20,
     marginTop: 10,
-    borderRadius: 12,
+    borderRadius: 24,
     paddingHorizontal: 12,
     height: 50,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 5,
   },
   searchIcon: {
     marginRight: 8,
