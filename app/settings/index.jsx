@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { ChevronRight, User, Lock, Globe, Bell, BookmarkCheck, Shield, Trash2 } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
 
 const settingsSections = [
   {
@@ -8,47 +9,56 @@ const settingsSections = [
     icon: User,
     title: 'Edit Profile',
     description: 'Update your personal information',
+    route: '/settings/profile'
   },
   {
     id: 'password',
     icon: Lock,
     title: 'Change Password',
     description: 'Update your security credentials',
+    route: '/settings/password'
   },
   {
     id: 'language',
     icon: Globe,
     title: 'Language Preference',
     description: 'Choose your preferred language',
+    route: '/settings/language'
   },
   {
     id: 'notifications',
     icon: Bell,
     title: 'Notification Settings',
     description: 'Manage your notifications',
+    route: '/settings/notifications'
   },
   {
     id: 'saved',
     icon: BookmarkCheck,
     title: 'Saved Jobs & Locations',
     description: 'View your saved items',
+    route: '/settings/saved-items'
   },
   {
     id: 'privacy',
     icon: Shield,
     title: 'Privacy Settings',
     description: 'Manage your privacy preferences',
+    route: '/settings/privacy'
   },
   {
     id: 'delete',
     icon: Trash2,
     title: 'Delete Account',
     description: 'Permanently delete your account',
+    route: '/settings/delete-account',
     danger: true,
   },
 ];
 
 const Settings = () => {
+  const router = useRouter();
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -63,7 +73,8 @@ const Settings = () => {
             style={[
               styles.settingItem,
               section.danger && styles.dangerItem,
-            ]}>
+            ]}
+            onPress={() => router.push(section.route)}>
             <View style={styles.settingContent}>
               <section.icon
                 size={24}
@@ -90,65 +101,65 @@ const Settings = () => {
         ))}
       </View>
     </ScrollView>
-  )
-}
-
-export default Settings
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F2F2F7',
-      },
-      header: {
-        padding: 20,
-        backgroundColor: '#006FFD',
-      },
-      title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-      },
-      subtitle: {
-        fontSize: 16,
-        color: '#FFFFFF',
-        marginTop: 4,
-      },
-      settingsList: {
-        padding: 16,
-      },
-      settingItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        backgroundColor: '#FFFFFF',
-        padding: 16,
-        borderRadius: 12,
-        marginBottom: 12,
-      },
-      dangerItem: {
-        backgroundColor: '#FEF2F2',
-      },
-      settingContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-      },
-      settingText: {
-        marginLeft: 12,
-        flex: 1,
-      },
-      settingTitle: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#1F2937',
-      },
-      dangerText: {
-        color: '#DC2626',
-      },
-      settingDescription: {
-        fontSize: 14,
-        color: '#6B7280',
-        marginTop: 2,
-      },
-})
+  container: {
+    flex: 1,
+    backgroundColor: '#F2F2F7',
+  },
+  header: {
+    padding: 20,
+    backgroundColor: '#006FFD',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    marginTop: 4,
+  },
+  settingsList: {
+    padding: 16,
+  },
+  settingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  dangerItem: {
+    backgroundColor: '#FEF2F2',
+  },
+  settingContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  settingText: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  settingTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1F2937',
+  },
+  dangerText: {
+    color: '#DC2626',
+  },
+  settingDescription: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 2,
+  },
+});
+
+export default Settings; 

@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Tabs, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import "../global.css"; // Import global styles for NativeWind
 import { View, TextInput, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
