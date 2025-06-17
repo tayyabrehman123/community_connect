@@ -126,9 +126,9 @@ const Home = () => {
       </View>
       
       
-      <View className="flex-1 items-center bg-blue-850 p-4">
+      {/* <View className="flex-1 items-center bg-blue-850 p-4">
           <Text className="text-lg font-bold text-black-500">Hello World</Text>
-      </View>
+      </View> */}
       
       
       

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import DonationCard from '../components/DonationCard';
+import DonationCard from '../../components/DonationCard';
+import { useRouter } from 'expo-router';
 
 const FoodDonation = () => {
+  const router = useRouter();
   const [activeType, setActiveType] = useState('all');
   const [activeCategory, setActiveCategory] = useState('all');
   
@@ -70,12 +72,14 @@ const FoodDonation = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-    
         <View>
           <Text style={styles.headerTitle}>Donate & Requests</Text>
           <Text style={styles.headerSubtitle}>Shares resources with the community</Text>
         </View>
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity 
+          style={styles.addButton}
+          onPress={() => router.push('/food_donation/add-donation')}
+        >
           <Ionicons name="add" size={24} color="#fff" />
         </TouchableOpacity>
       </View>

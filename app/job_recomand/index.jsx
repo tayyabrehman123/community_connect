@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import JobCard from '../components/JobCard';
+import JobCard from '../../components/JobCard';
+import { useRouter } from 'expo-router';
 
-const job_recomand = () => {
+const JobRecomand = () => {
+  const router = useRouter();
   const [activeFilter, setActiveFilter] = useState('recommended');
   
   const filters = [
@@ -60,8 +62,16 @@ const job_recomand = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Find Works</Text>
-        <Text style={styles.headerSubtitle}>Jobs matching your skills and location</Text>
+        <View>
+          <Text style={styles.headerTitle}>Find Works</Text>
+          <Text style={styles.headerSubtitle}>Jobs matching your skills and location</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.addButton}
+          onPress={() => router.push('/job_recomand/add-job')}
+        >
+          <Ionicons name="add" size={24} color="#fff" />
+        </TouchableOpacity>
       </View>
       
       <View style={styles.searchContainer}>
@@ -141,6 +151,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 20,
   },
   headerTitle: {
@@ -152,6 +165,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     marginTop: 4,
+  },
+  addButton: {
+    backgroundColor: '#006FFD',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -243,4 +264,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default job_recomand;
+export default JobRecomand; 
