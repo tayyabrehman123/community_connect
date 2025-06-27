@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { ChevronRight, User, Lock, Globe, Bell, BookmarkCheck, Shield, Trash2 } from 'lucide-react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { ChevronRight, User, Lock, Globe, Bell, BookmarkCheck, Shield, Trash2, LogOut } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../firebaseConfig';
 
 const settingsSections = [
   {
@@ -59,6 +61,15 @@ const settingsSections = [
 const Settings = () => {
   const router = useRouter();
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.replace('/(auth)/login');
+    } catch (err) {
+      Alert.alert('Logout Error', err.message);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -99,6 +110,10 @@ const Settings = () => {
             />
           </TouchableOpacity>
         ))}
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <LogOut size={22} color="#fff" style={{ marginRight: 10 }} />
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -159,6 +174,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
     marginTop: 2,
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#006FFD',
+    padding: 14,
+    borderRadius: 12,
+    marginTop: 24,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

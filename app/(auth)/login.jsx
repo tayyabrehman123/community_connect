@@ -1,25 +1,51 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
+import { View, TextInput, Text, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { Link, useRouter } from 'expo-router';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
 
-  const handleLogin = () => {
-    // Your login logic here
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter both email and password.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      const response = await fetch('http://192.168.0.104:5000/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Login failed');
+      // Store token if needed: await AsyncStorage.setItem('token', data.token);
+      Alert.alert('Success', 'Logged in successfully!');
+      router.replace('/'); // Navigate to home screen
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return(
     <View style={styles.container}>
+      <Image source={require('../../assets/CommunityConnect.png')} style={styles.logo} />
       <Text style={styles.title}>Login</Text>
-      
       <TextInput
         style={styles.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
         placeholderTextColor="#999"
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
@@ -29,15 +55,12 @@ export default function LoginScreen() {
         onChangeText={setPassword}
         placeholderTextColor="#999"
       />
-
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Log In</Text>
+      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+        <Text style={styles.buttonText}>{loading ? 'Logging In...' : 'Log In'}</Text>
       </TouchableOpacity>
-
+      {error && <Text style={styles.error}>{error}</Text>}
       <View style={styles.signupContainer}>
         <Text style={styles.signupText}>Don't have an account?</Text>
-        
-        {/* Navigate to Sign Up page using Link */}
         <Link href="/signup">
           <Text style={styles.signupLink}> Sign Up here</Text>
         </Link>
@@ -51,7 +74,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#fff',
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    //resizeMode: 'contain',
+    alignSelf: 'center',
+    marginBottom: 16,
+    borderRadius: 30,
+    marginLeft: 10,
   },
   title: {
     fontSize: 24,
@@ -64,7 +96,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 25,
     paddingHorizontal: 10,
     fontSize: 16,
     marginBottom: 20,
@@ -73,7 +105,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#1e90ff',
     paddingVertical: 15,
-    borderRadius: 8,
+    borderRadius: 25,
     alignItems: 'center',
   },
   buttonText: {
@@ -96,4 +128,8 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontWeight: 'bold',
   },
-});
+  error: {
+    color: 'red',
+    marginTop: 12,
+  },
+}); 

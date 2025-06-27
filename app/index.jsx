@@ -1,138 +1,170 @@
-import React from "react";
-import { View, TextInput, Text, ScrollView, Image, StyleSheet, Touchable } from "react-native";
+import React, { useState } from "react";
+import { View, TextInput, Text, ScrollView, Image, StyleSheet, Modal, TouchableOpacity } from "react-native";
 import { useRouter } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
 import { Card, Button } from 'react-native-paper';
 
 const Home = () => {
   const router = useRouter();
-  
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+
+  const openSidebar = () => setSidebarVisible(true);
+  const closeSidebar = () => setSidebarVisible(false);
+  const goToSettings = () => {
+    closeSidebar();
+    router.push('/settings');
+  };
+
+  // Add navigation functions for testing
+  const goToLogin = () => router.push('/admin/admin');
+  const goToSignup = () => router.push('/(auth)/signup');
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Community Connect</Text>
-        <Text style={styles.headerSubtitle}>Support for everyone in need</Text>
-      </View>
-      
-      <View style={styles.content}>
-        <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="gray" style={styles.searchIcon} />
-          <TextInput 
-            style={styles.searchInput}
-            placeholder="Search" 
-            placeholderTextColor="gray" 
-          />
-        </View>
-          
-        <Text style={styles.sectionTitle}>Services</Text>
-    
-        <View style={styles.cardContainer}>
-          <Card style={styles.card}>
-            <Card.Content style={styles.cardContent}>
-              <View style={styles.cardTextContainer}>
-                <Text style={styles.cardTitle}>Shelters near you</Text>
-                <Text style={styles.cardSubtitle}>
-                  Find nearby shelters with available space.
-                </Text>
-                <Button 
-                  mode="contained" 
-                  style={styles.button}
-                  onPress={() => router.push('/shelter')}
-                >
-                  Search
-                </Button>
-              </View>
-              <Image 
-                source={require("../assets/shelter.jpg")} 
-                style={styles.cardImage}
-              />
-            </Card.Content>
-          </Card>
-        </View>
+    <View style={{ flex: 1 }}>
+      {/* Sidebar Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={sidebarVisible}
+        onRequestClose={closeSidebar}
+      >
+        <TouchableOpacity style={styles.overlay} onPress={closeSidebar} activeOpacity={1}>
+          <View style={styles.sidebarRight}>
+            <Text style={styles.sidebarTitle}>Menu</Text>
+            <TouchableOpacity style={styles.sidebarButton} onPress={goToSettings}>
+              <Ionicons name="settings-outline" size={24} color="#006FFD" style={{ marginRight: 12 }} />
+              <Text style={styles.sidebarButtonText}>Settings</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
-        <View style={styles.cardContainer}>
-          <Card style={styles.card}>
-            <Card.Content style={styles.cardContent}>
-              <View style={styles.cardTextContainer}>
-                <Text style={styles.cardTitle}>FoodBanks near you</Text>
-                <Text style={styles.cardSubtitle}>
-                  Find nearby available foodbanks.
-                </Text>
-                <Button 
-                  mode="contained" 
-                  style={styles.button}
-                  onPress={() => router.push('/foodbank')}
-                >
-                  Search
-                </Button>
-              </View>
-              <Image 
-                source={require("../assets/foodbanks.jpg")} 
-                style={styles.cardImage}
-              />
-            </Card.Content>
-          </Card>
-        </View>
-
-        <View style={styles.cardContainer}>
-          <Card style={styles.card}>
-            <Card.Content style={styles.cardContent}>
-              <View style={styles.cardTextContainer}>
-                <Text style={styles.cardTitle}>Find Jobs near you</Text>
-                <Text style={styles.cardSubtitle}>
-                  Find jobs according to your skills available.
-                </Text>
-                <Button 
-                  mode="contained" 
-                  style={styles.button}
-                  onPress={() => router.push('/job_recomand')}
-                >
-                  Search
-                </Button>
-              </View>
-              <Image 
-                source={require("../assets/jobfinder.jpg")} 
-                style={styles.cardImage}
-              />
-            </Card.Content>
-          </Card>
-        </View>
-
-        <View style={styles.cardContainer}>
-          <Card style={styles.card}>
-            <Card.Content style={styles.cardContent}>
-              <View style={styles.cardTextContainer}>
-                <Text style={styles.cardTitle}>Food donation</Text>
-                <Text style={styles.cardSubtitle}>
-                  Donate food for the people in need.
-                </Text>
-                <Button 
-                  mode="contained" 
-                  style={styles.button}
-                  onPress={() => router.push('/food_donation')}
-                >
-                  Search
-                </Button>
-              </View>
-              <Image 
-                source={require("../assets/donation.jpg")} 
-                style={styles.cardImage}
-              />
-            </Card.Content>
-          </Card>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Community Connect</Text>
+          <TouchableOpacity onPress={openSidebar} style={styles.menuButtonRight}>
+            <Ionicons name="menu" size={28} color="#FFF" />
+          </TouchableOpacity>
+          <Text style={styles.headerSubtitle}>Support for everyone in need</Text>
         </View>
         
+        <View style={styles.content}>
+          {/* Add test buttons here */}
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16, marginTop: 8 }}>
+            <Button title="Login" onPress={goToLogin}>admin</Button>
+            <Button title="Login" onPress={goToSignup}>signup</Button>
+          </View>
+          <View style={styles.searchContainer}>
+            <Ionicons name="search" size={20} color="gray" style={styles.searchIcon} />
+            <TextInput 
+              style={styles.searchInput}
+              placeholder="Search" 
+              placeholderTextColor="gray" 
+            />
+          </View>
           
-      </View>
-      
-      
-      {/* <View className="flex-1 items-center bg-blue-850 p-4">
-          <Text className="text-lg font-bold text-black-500">Hello World</Text>
-      </View> */}
-      
-      
-      
-    </ScrollView>
+          <Text style={styles.sectionTitle}>Services</Text>
+    
+          <View style={styles.cardContainer}>
+            <Card style={styles.card}>
+              <Card.Content style={styles.cardContent}>
+                <View style={styles.cardTextContainer}>
+                  <Text style={styles.cardTitle}>Shelters near you</Text>
+                  <Text style={styles.cardSubtitle}>
+                    Find nearby shelters with available space.
+                  </Text>
+                  <Button 
+                    mode="contained" 
+                    style={styles.button}
+                    onPress={() => router.push('/shelter')}
+                  >
+                    Search
+                  </Button>
+                </View>
+                <Image 
+                  source={require("../assets/shelter.jpg")} 
+                  style={styles.cardImage}
+                />
+              </Card.Content>
+            </Card>
+          </View>
+
+          <View style={styles.cardContainer}>
+            <Card style={styles.card}>
+              <Card.Content style={styles.cardContent}>
+                <View style={styles.cardTextContainer}>
+                  <Text style={styles.cardTitle}>FoodBanks near you</Text>
+                  <Text style={styles.cardSubtitle}>
+                    Find nearby available foodbanks.
+                  </Text>
+                  <Button 
+                    mode="contained" 
+                    style={styles.button}
+                    onPress={() => router.push('/foodbank')}
+                  >
+                    Search
+                  </Button>
+                </View>
+                <Image 
+                  source={require("../assets/foodbanks.jpg")} 
+                  style={styles.cardImage}
+                />
+              </Card.Content>
+            </Card>
+          </View>
+
+          <View style={styles.cardContainer}>
+            <Card style={styles.card}>
+              <Card.Content style={styles.cardContent}>
+                <View style={styles.cardTextContainer}>
+                  <Text style={styles.cardTitle}>Find Jobs near you</Text>
+                  <Text style={styles.cardSubtitle}>
+                    Find jobs according to your skills available.
+                  </Text>
+                  <Button 
+                    mode="contained" 
+                    style={styles.button}
+                    onPress={() => router.push('/job_recomand')}
+                  >
+                    Search
+                  </Button>
+                </View>
+                <Image 
+                  source={require("../assets/jobfinder.jpg")} 
+                  style={styles.cardImage}
+                />
+              </Card.Content>
+            </Card>
+          </View>
+
+          <View style={styles.cardContainer}>
+            <Card style={styles.card}>
+              <Card.Content style={styles.cardContent}>
+                <View style={styles.cardTextContainer}>
+                  <Text style={styles.cardTitle}>Food donation</Text>
+                  <Text style={styles.cardSubtitle}>
+                    Donate food for the people in need.
+                  </Text>
+                  <Button 
+                    mode="contained" 
+                    style={styles.button}
+                    onPress={() => router.push('/food_donation')}
+                  >
+                    Search
+                  </Button>
+                </View>
+                <Image 
+                  source={require("../assets/donation.jpg")} 
+                  style={styles.cardImage}
+                />
+              </Card.Content>
+            </Card>
+          </View>
+          
+        </View>
+        
+      </ScrollView>
+    </View>
   );
 };
 
@@ -143,17 +175,69 @@ const styles = StyleSheet.create({
   },
   header: {
     marginLeft: 20,
-    marginBottom: 8,
+    marginBottom: 15,
     marginTop: 24,
     paddingBottom: 20,
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  menuButtonRight: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 2,
+    padding: 8,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#FFFFFF',
+    marginLeft: 0,
+    flex: 1,
   },
   headerSubtitle: {
     color: '#FFFFFF',
+    position: 'absolute',
+    left: 0,
+    bottom: 2,
+    fontSize: 14,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  sidebarRight: {
+    width: 250,
+    backgroundColor: '#fff',
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    height: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: -2, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8,
+    alignItems: 'flex-start',
+  },
+  sidebarTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    color: '#006FFD',
+  },
+  sidebarButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  sidebarButtonText: {
+    fontSize: 16,
+    color: '#006FFD',
+    fontWeight: '600',
   },
   content: {
     flex: 1,
