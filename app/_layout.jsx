@@ -1,15 +1,41 @@
 import { Stack } from "expo-router";
 import "../global.css"; // Import global styles for NativeWind
-import AuthGate from '../components/AuthGate';
-   
+import { UserProvider } from '../components/AuthGate';
+
 export default function Layout() {
   return (
-    <AuthGate>
+    <UserProvider>
       <Stack
         screenOptions={{
           headerShown: false,
-          }}
-        />
-    </AuthGate>
+        }}
+      />
+    </UserProvider>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+// import { Stack } from "expo-router";
+// import "../global.css"; // Import global styles for NativeWind
+// import AuthGate from '../components/AuthGate';
+   
+// export default function Layout() {
+//   return (
+//     <AuthGate>
+//       <Stack
+//         screenOptions={{
+//           headerShown: false,
+//           }}
+//         />
+//     </AuthGate>
+//   );
+// }

@@ -8,30 +8,104 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Image
+  Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 const AddDonation = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    type: 'offer', // 'offer' or 'need'
-    category: 'food', // 'food', 'clothing', 'hygiene', 'other'
+    category: 'food',
+    quantity: '',
     location: '',
     contact: '',
-    quantity: '',
     expiryDate: '',
-    imageUrl: ''
+    imageUrl: '',
+    pickupInstructions: '',
+    availableTime: '9:00 AM - 6:00 PM',
+    address: '',
+    latitude: '',
+    longitude: ''
   });
 
-  const handleSubmit = () => {
-    // Here you would typically send the data to your backend
-    console.log('Form submitted:', formData);
-    // Navigate back to donations page
-    router.back();
+  const handleSubmit = async () => {
+    // Validate required fields
+    const requiredFields = ['title', 'description', 'quantity', 'location', 'contact', 'pickupInstructions', 'address', 'latitude', 'longitude'];
+    const missingFields = requiredFields.filter(field => !formData[field]);
+    
+    if (missingFields.length > 0) {
+      Alert.alert('Error', `Please fill in all required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    // Validate coordinates
+    const lat = parseFloat(formData.latitude);
+    const lng = parseFloat(formData.longitude);
+    
+    if (isNaN(lat) || isNaN(lng)) {
+      Alert.alert('Error', 'Please enter valid latitude and longitude coordinates');
+      return;
+    }
+    
+    if (lat < -90 || lat > 90) {
+      Alert.alert('Error', 'Latitude must be between -90 and 90');
+      return;
+    }
+    
+    if (lng < -180 || lng > 180) {
+      Alert.alert('Error', 'Longitude must be between -180 and 180');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      const response = await fetch('http://192.168.0.104:5000/api/donations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          category: formData.category,
+          quantity: formData.quantity,
+          location: formData.location,
+          address: formData.address,
+          latitude: lat,
+          longitude: lng,
+          contact: formData.contact,
+          expiryDate: formData.expiryDate,
+          imageUrl: formData.imageUrl,
+          pickupInstructions: formData.pickupInstructions,
+          availableTime: formData.availableTime
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Donation created:', result);
+        Alert.alert(
+          'Success! 🎉', 
+          'Donation posted successfully! Workers will be able to see and claim your donation.',
+          [
+            { text: 'OK', onPress: () => router.push('/donor-dashboard') }
+          ]
+        );
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to post donation');
+      }
+    } catch (error) {
+      console.error('Error posting donation:', error);
+      Alert.alert('Error', 'Failed to post donation: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,41 +121,10 @@ const AddDonation = () => {
           >
             <Ionicons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Add New Donation</Text>
+          <Text style={styles.headerTitle}>Post Donation</Text>
         </View>
 
         <View style={styles.formContainer}>
-          {/* Type Selection */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Type *</Text>
-            <View style={styles.typeContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.typeButton,
-                  formData.type === 'offer' && styles.activeType
-                ]}
-                onPress={() => setFormData({...formData, type: 'offer'})}
-              >
-                <Text style={[
-                  styles.typeText,
-                  formData.type === 'offer' && styles.activeTypeText
-                ]}>I Want to Donate</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.typeButton,
-                  formData.type === 'need' && styles.activeType
-                ]}
-                onPress={() => setFormData({...formData, type: 'need'})}
-              >
-                <Text style={[
-                  styles.typeText,
-                  formData.type === 'need' && styles.activeTypeText
-                ]}>I Need Help</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
           {/* Category Selection */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Category *</Text>
@@ -111,7 +154,7 @@ const AddDonation = () => {
             <Text style={styles.label}>Title *</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., Dry Food Items"
+              placeholder="e.g., Large Food Donation - Rice & Pulses"
               value={formData.title}
               onChangeText={(text) => setFormData({...formData, title: text})}
             />
@@ -122,11 +165,22 @@ const AddDonation = () => {
             <Text style={styles.label}>Description *</Text>
             <TextInput
               style={[styles.input, styles.textArea]}
-              placeholder="Describe what you're offering or need..."
+              placeholder="Describe what you're donating in detail. Include quantity, condition, etc..."
               multiline
               numberOfLines={4}
               value={formData.description}
               onChangeText={(text) => setFormData({...formData, description: text})}
+            />
+          </View>
+
+          {/* Quantity */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Quantity *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g., 50kg rice, 20kg pulses"
+              value={formData.quantity}
+              onChangeText={(text) => setFormData({...formData, quantity: text})}
             />
           </View>
 
@@ -135,10 +189,47 @@ const AddDonation = () => {
             <Text style={styles.label}>Location *</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., Gulberg, Lahore"
+              placeholder="e.g., Gulberg III, Lahore"
               value={formData.location}
               onChangeText={(text) => setFormData({...formData, location: text})}
             />
+          </View>
+
+          {/* Detailed Address */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Detailed Address *</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              placeholder="e.g., House #123, Street 5, Gulberg III, Lahore"
+              multiline
+              numberOfLines={3}
+              value={formData.address}
+              onChangeText={(text) => setFormData({...formData, address: text})}
+            />
+          </View>
+
+          {/* Coordinates */}
+          <View style={styles.coordinatesContainer}>
+            <View style={styles.coordinateField}>
+              <Text style={styles.label}>Latitude *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g., 31.5204"
+                keyboardType="numeric"
+                value={formData.latitude}
+                onChangeText={(text) => setFormData({...formData, latitude: text})}
+              />
+            </View>
+            <View style={styles.coordinateField}>
+              <Text style={styles.label}>Longitude *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g., 74.3587"
+                keyboardType="numeric"
+                value={formData.longitude}
+                onChangeText={(text) => setFormData({...formData, longitude: text})}
+              />
+            </View>
           </View>
 
           {/* Contact Information */}
@@ -152,14 +243,27 @@ const AddDonation = () => {
             />
           </View>
 
-          {/* Quantity */}
+          {/* Available Time */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Quantity</Text>
+            <Text style={styles.label}>Available Time *</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., 5 kg, 10 pieces"
-              value={formData.quantity}
-              onChangeText={(text) => setFormData({...formData, quantity: text})}
+              placeholder="e.g., 9:00 AM - 6:00 PM"
+              value={formData.availableTime}
+              onChangeText={(text) => setFormData({...formData, availableTime: text})}
+            />
+          </View>
+
+          {/* Pickup Instructions */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Pickup Instructions *</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              placeholder="e.g., Please call 15 minutes before arrival. Ring the doorbell and ask for Ahmed."
+              multiline
+              numberOfLines={3}
+              value={formData.pickupInstructions}
+              onChangeText={(text) => setFormData({...formData, pickupInstructions: text})}
             />
           </View>
 
@@ -178,7 +282,7 @@ const AddDonation = () => {
 
           {/* Image Upload */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Add Photo</Text>
+            <Text style={styles.label}>Add Photo (Optional)</Text>
             <TouchableOpacity style={styles.imageUploadButton}>
               <Ionicons name="camera" size={24} color="#666" />
               <Text style={styles.imageUploadText}>Upload Photo</Text>
@@ -187,11 +291,12 @@ const AddDonation = () => {
 
           {/* Submit Button */}
           <TouchableOpacity 
-            style={styles.submitButton}
+            style={[styles.submitButton, loading && styles.submitButtonDisabled]}
             onPress={handleSubmit}
+            disabled={loading}
           >
             <Text style={styles.submitButtonText}>
-              {formData.type === 'offer' ? 'Post Donation' : 'Post Request'}
+              {loading ? 'Posting...' : 'Post Donation'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -214,13 +319,19 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e7e7e7',
+    borderBottomColor: '#e0e0e0',
   },
   backButton: {
-    marginRight: 15,
+    backgroundColor: '#EAF2FF',
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
   },
@@ -228,104 +339,87 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   inputGroup: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   label: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#333',
     marginBottom: 8,
   },
   input: {
     backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
     borderWidth: 1,
-    borderColor: '#e7e7e7',
+    borderColor: '#e0e0e0',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
+    color: '#333',
   },
   textArea: {
     height: 100,
     textAlignVertical: 'top',
   },
-  typeContainer: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  typeButton: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e7e7e7',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-  },
-  activeType: {
-    backgroundColor: '#006FFD',
-    borderColor: '#006FFD',
-  },
-  typeText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  activeTypeText: {
-    color: '#fff',
-  },
   categoryContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
+    gap: 12,
   },
   categoryButton: {
     flex: 1,
-    minWidth: '45%',
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#e7e7e7',
-    backgroundColor: '#fff',
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
     alignItems: 'center',
   },
   activeCategory: {
-    backgroundColor: '#006FFD',
-    borderColor: '#006FFD',
+    backgroundColor: '#28A745',
   },
   categoryText: {
-    fontSize: 16,
-    color: '#333',
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666',
   },
   activeCategoryText: {
     color: '#fff',
   },
   imageUploadButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#e7e7e7',
+    borderWidth: 2,
+    borderColor: '#e0e0e0',
     borderStyle: 'dashed',
+    borderRadius: 12,
+    paddingVertical: 24,
+    alignItems: 'center',
+    gap: 8,
   },
   imageUploadText: {
-    marginLeft: 8,
     fontSize: 16,
     color: '#666',
   },
   submitButton: {
-    backgroundColor: '#006FFD',
-    padding: 16,
-    borderRadius: 8,
+    backgroundColor: '#28A745',
+    paddingVertical: 16,
+    borderRadius: 12,
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 40,
+  },
+  submitButtonDisabled: {
+    backgroundColor: '#ccc',
   },
   submitButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  coordinatesContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 24,
+  },
+  coordinateField: {
+    flex: 1,
   },
 });
 

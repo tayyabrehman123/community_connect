@@ -9,6 +9,8 @@ export default function FoodDonationLayout() {
     >
       <Stack.Screen name="index" />
       <Stack.Screen name="add-donation" />
+      <Stack.Screen name="my-donations" />
+      <Stack.Screen name="donation-details" />
     </Stack>
   );
 } 

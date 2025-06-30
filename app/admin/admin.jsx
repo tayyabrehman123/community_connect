@@ -54,6 +54,18 @@ const AdminDashboard = () => {
         <Card style={styles.card}>
           <Card.Content style={styles.cardContent}>
             <View style={styles.cardTextContainer}>
+              <Text style={styles.cardTitle}>Add Donation</Text>
+              <Text style={styles.cardSubtitle}>Post a new donation for workers to collect.</Text>
+              <Button mode="contained" style={styles.button} onPress={() => router.push('/food_donation/add-donation')}>Add Donation</Button>
+            </View>
+            <Image source={require('../../assets/donation.jpg')} style={styles.cardImage} />
+          </Card.Content>
+        </Card>
+        
+        
+        <Card style={styles.card}>
+          <Card.Content style={styles.cardContent}>
+            <View style={styles.cardTextContainer}>
               <Text style={styles.cardTitle}>Manage Users</Text>
               <Text style={styles.cardSubtitle}>Add or remove users from the platform.</Text>
               <Button mode="contained" style={styles.button} onPress={() => router.push('/admin/manage-users')}>Manage Users</Button>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PasswordSettings = () => {
   const router = useRouter();
@@ -23,29 +24,32 @@ const PasswordSettings = () => {
     });
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (!passwords.current || !passwords.new || !passwords.confirm) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
-
     if (passwords.new !== passwords.confirm) {
       Alert.alert('Error', 'New passwords do not match');
       return;
     }
-
     if (passwords.new.length < 8) {
       Alert.alert('Error', 'Password must be at least 8 characters long');
       return;
     }
-
-    // TODO: Implement password change functionality
-    Alert.alert('Success', 'Password changed successfully', [
-      {
-        text: 'OK',
-        onPress: () => router.back(),
-      },
-    ]);
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const res = await fetch('http://192.168.0.104:5000/api/users/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ currentPassword: passwords.current, newPassword: passwords.new }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to change password');
+      Alert.alert('Success', 'Password changed successfully', [{ text: 'OK', onPress: () => router.back() }]);
+    } catch (err) {
+      Alert.alert('Error', err.message);
+    }
   };
 
   return (

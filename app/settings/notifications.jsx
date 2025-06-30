@@ -10,12 +10,12 @@ const notificationTypes = [
     description: 'Important updates and announcements',
     icon: Bell,
   },
-  {
-    id: 'messages',
-    title: 'Messages',
-    description: 'New messages and communication',
-    icon: MessageSquare,
-  },
+  // {
+  //   id: 'messages',
+  //   title: 'Messages',
+  //   description: 'New messages and communication',
+  //   icon: MessageSquare,
+  // },
   {
     id: 'nearby',
     title: 'Nearby Services',

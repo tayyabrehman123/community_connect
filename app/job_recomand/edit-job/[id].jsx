@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -11,14 +11,13 @@ import {
   Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserContext } from '../../components/AuthGate';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
-const AddJob = () => {
+const EditJob = () => {
   const router = useRouter();
-  const { user } = React.useContext(UserContext);
+  const { id } = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
     company: '',
@@ -33,21 +32,39 @@ const AddJob = () => {
     workSchedule: '',
     benefits: ''
   });
-  const [profession, setProfession] = useState('');
-  const [showProfessionDropdown, setShowProfessionDropdown] = useState(false);
 
-  const professions = [
-    'Construction Worker',
-    'Plumber',
-    'Driver',
-    'Electrician',
-    'House Keeper',
-    'Painter',
-    'Carpenter',
-    'Cleaner',
-    'Mechanic',
-    'Welder'
-  ];
+  useEffect(() => {
+    fetchJob();
+  }, [id]);
+
+  const fetchJob = async () => {
+    try {
+      setFetching(true);
+      const response = await fetch(`http://192.168.0.104:5000/api/jobs/${id}`);
+      if (!response.ok) throw new Error('Failed to fetch job');
+      
+      const job = await response.json();
+      setFormData({
+        title: job.title || '',
+        company: job.company || '',
+        location: job.location || '',
+        salaryMin: job.salaryMin?.toString() || '',
+        salaryMax: job.salaryMax?.toString() || '',
+        jobType: job.jobType || 'full-time',
+        requirements: job.requirements?.join(', ') || '',
+        description: job.description || '',
+        contactEmail: job.contactEmail || '',
+        contactPhone: job.contactPhone || '',
+        workSchedule: job.workSchedule || '',
+        benefits: job.benefits || ''
+      });
+    } catch (error) {
+      Alert.alert('Error', 'Failed to load job: ' + error.message);
+      router.back();
+    } finally {
+      setFetching(false);
+    }
+  };
 
   const validateForm = () => {
     const required = ['title', 'company', 'location', 'salaryMin', 'salaryMax', 'description', 'contactEmail'];
@@ -57,10 +74,6 @@ const AddJob = () => {
         return false;
       }
     }
-    if (!profession) {
-      Alert.alert('Error', 'Please select a profession required for this job');
-      return false;
-    }
     if (parseInt(formData.salaryMin) > parseInt(formData.salaryMax)) {
       Alert.alert('Error', 'Minimum salary cannot be greater than maximum salary');
       return false;
@@ -69,131 +82,124 @@ const AddJob = () => {
   };
 
   const handleSubmit = async () => {
-    if (!user || !user._id) {
-      Alert.alert('Error', 'User not loaded. Please log in again.');
-      return;
-    }
     if (!validateForm()) return;
     
     setLoading(true);
     try {
-      console.log('Posting job as user:', user);
-      const response = await fetch('http://192.168.0.104:5000/api/jobs', {
-        method: 'POST',
+      const response = await fetch(`http://192.168.0.104:5000/api/jobs/${id}`, {
+        method: 'PUT',
         headers: { 
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           ...formData,
-          profession,
           salaryMin: parseInt(formData.salaryMin),
           salaryMax: parseInt(formData.salaryMax),
-          requirements: formData.requirements.split(',').map(skill => skill.trim()).filter(skill => skill),
-          postedBy: user._id
+          requirements: formData.requirements.split(',').map(skill => skill.trim()).filter(skill => skill)
         })
       });
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to post job');
+        throw new Error(errorData.message || 'Failed to update job');
       }
       
-      Alert.alert('Success', 'Job posted successfully!', [
+      Alert.alert('Success', 'Job updated successfully!', [
         { text: 'OK', onPress: () => router.push('/employer-dashboard') }
       ]);
     } catch (error) {
-      console.error('Job posting error:', error);
-      Alert.alert('Error', 'Failed to post job: ' + error.message);
+      console.error('Job update error:', error);
+      Alert.alert('Error', 'Failed to update job: ' + error.message);
     } finally {
       setLoading(false);
     }
   };
 
+  if (fetching) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading job...</Text>
+      </View>
+    );
+  }
+
   return (
     <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Post a New Job</Text>
-        <View style={{ width: 24 }} />
+        <Text style={styles.headerTitle}>Edit Job</Text>
+        <View style={styles.placeholder} />
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <View style={styles.formContainer}>
-          {/* Job Title */}
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.form}>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Job Title *</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., Delivery Rider"
               value={formData.title}
               onChangeText={(text) => setFormData({...formData, title: text})}
+              placeholder="e.g., Warehouse Associate"
             />
           </View>
 
-          {/* Company Name */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Company Name *</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., FoodPanda Pakistan"
               value={formData.company}
               onChangeText={(text) => setFormData({...formData, company: text})}
+              placeholder="e.g., Community Food Bank"
             />
           </View>
 
-          {/* Location */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Location *</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., Gulberg, Lahore"
               value={formData.location}
               onChangeText={(text) => setFormData({...formData, location: text})}
+              placeholder="e.g., New York, NY"
             />
           </View>
 
-          {/* Salary Range */}
-          <View style={styles.salaryContainer}>
-            <View style={[styles.inputGroup, { flex: 1, marginRight: 10 }]}>
-              <Text style={styles.label}>Minimum Salary (PKR) *</Text>
+          <View style={styles.row}>
+            <View style={[styles.inputGroup, styles.halfWidth]}>
+              <Text style={styles.label}>Min Salary (PKR) *</Text>
               <TextInput
                 style={styles.input}
-                placeholder="e.g., 25000"
-                keyboardType="numeric"
                 value={formData.salaryMin}
                 onChangeText={(text) => setFormData({...formData, salaryMin: text})}
+                placeholder="25000"
+                keyboardType="numeric"
               />
             </View>
-            <View style={[styles.inputGroup, { flex: 1 }]}>
-              <Text style={styles.label}>Maximum Salary (PKR) *</Text>
+            <View style={[styles.inputGroup, styles.halfWidth]}>
+              <Text style={styles.label}>Max Salary (PKR) *</Text>
               <TextInput
                 style={styles.input}
-                placeholder="e.g., 35000"
-                keyboardType="numeric"
                 value={formData.salaryMax}
                 onChangeText={(text) => setFormData({...formData, salaryMax: text})}
+                placeholder="35000"
+                keyboardType="numeric"
               />
             </View>
           </View>
 
-          {/* Job Type */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Job Type *</Text>
+            <Text style={styles.label}>Job Type</Text>
             <View style={styles.jobTypeContainer}>
               {['full-time', 'part-time', 'contract', 'internship'].map(type => (
                 <TouchableOpacity
                   key={type}
                   style={[
                     styles.jobTypeButton,
-                    formData.jobType === type && styles.activeJobType
+                    formData.jobType === type && styles.activeJobTypeButton
                   ]}
                   onPress={() => setFormData({...formData, jobType: type})}
                 >
@@ -208,71 +214,38 @@ const AddJob = () => {
             </View>
           </View>
 
-          {/* Required Skills */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Required Skills *</Text>
+            <Text style={styles.label}>Required Skills</Text>
             <TextInput
-              style={[styles.input, styles.textArea]}
-              placeholder="Enter skills separated by commas (e.g., Driving License, Customer Service)"
-              multiline
-              numberOfLines={3}
+              style={styles.textArea}
               value={formData.requirements}
               onChangeText={(text) => setFormData({...formData, requirements: text})}
+              placeholder="e.g., driving license, customer service, flexible schedule"
+              multiline
+              numberOfLines={3}
             />
           </View>
 
-          {/* Job Description */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Job Description *</Text>
             <TextInput
-              style={[styles.input, styles.textArea]}
-              placeholder="Describe the job responsibilities, requirements, and what you're looking for..."
-              multiline
-              numberOfLines={6}
+              style={styles.textArea}
               value={formData.description}
               onChangeText={(text) => setFormData({...formData, description: text})}
+              placeholder="Describe the job responsibilities and requirements..."
+              multiline
+              numberOfLines={4}
             />
           </View>
 
-          {/* Profession Required */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Profession Required *</Text>
-            <TouchableOpacity
-              style={[styles.input, { justifyContent: 'center' }]}
-              onPress={() => setShowProfessionDropdown(true)}
-            >
-              <Text style={{ color: profession ? '#333' : '#999' }}>
-                {profession || 'Select Profession'}
-              </Text>
-            </TouchableOpacity>
-            {showProfessionDropdown && (
-              <View style={{ backgroundColor: '#fff', borderWidth: 1, borderColor: '#ccc', borderRadius: 8, marginTop: 4 }}>
-                {professions.map((item) => (
-                  <TouchableOpacity
-                    key={item}
-                    style={{ padding: 12 }}
-                    onPress={() => {
-                      setProfession(item);
-                      setShowProfessionDropdown(false);
-                    }}
-                  >
-                    <Text style={{ color: '#333' }}>{item}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
-
-          {/* Contact Information */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Contact Email *</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., hr@company.com"
-              keyboardType="email-address"
-              autoCapitalize="none"
               value={formData.contactEmail}
               onChangeText={(text) => setFormData({...formData, contactEmail: text})}
+              placeholder="hr@company.com"
+              keyboardType="email-address"
             />
           </View>
 
@@ -280,49 +253,48 @@ const AddJob = () => {
             <Text style={styles.label}>Contact Phone</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., +92 300 1234567"
-              keyboardType="phone-pad"
               value={formData.contactPhone}
               onChangeText={(text) => setFormData({...formData, contactPhone: text})}
+              placeholder="+92 300 1234567"
+              keyboardType="phone-pad"
             />
           </View>
 
-          {/* Work Schedule */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Work Schedule</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., Monday to Friday, 9 AM to 5 PM"
               value={formData.workSchedule}
               onChangeText={(text) => setFormData({...formData, workSchedule: text})}
+              placeholder="e.g., Monday-Friday, 9 AM-5 PM"
             />
           </View>
 
-          {/* Benefits */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Benefits & Perks</Text>
+            <Text style={styles.label}>Benefits</Text>
             <TextInput
-              style={[styles.input, styles.textArea]}
-              placeholder="e.g., Health insurance, flexible hours, performance bonuses"
-              multiline
-              numberOfLines={3}
+              style={styles.textArea}
               value={formData.benefits}
               onChangeText={(text) => setFormData({...formData, benefits: text})}
+              placeholder="e.g., Health insurance, paid time off, flexible hours"
+              multiline
+              numberOfLines={3}
             />
           </View>
-
-          {/* Submit Button */}
-          <TouchableOpacity 
-            style={[styles.submitButton, loading && styles.submitButtonDisabled]}
-            onPress={handleSubmit}
-            disabled={loading}
-          >
-            <Text style={styles.submitButtonText}>
-              {loading ? 'Posting Job...' : 'Post Job'}
-            </Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <View style={styles.footer}>
+        <TouchableOpacity 
+          style={[styles.submitButton, loading && styles.disabledButton]}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          <Text style={styles.submitButtonText}>
+            {loading ? 'Updating...' : 'Update Job'}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -331,6 +303,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
   },
   header: {
     flexDirection: 'row',
@@ -349,10 +330,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-  scrollView: {
+  placeholder: {
+    width: 32,
+  },
+  content: {
     flex: 1,
   },
-  formContainer: {
+  form: {
     padding: 20,
   },
   inputGroup: {
@@ -371,14 +355,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    color: '#333',
   },
   textArea: {
-    height: 100,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
     textAlignVertical: 'top',
   },
-  salaryContainer: {
+  row: {
     flexDirection: 'row',
+    gap: 12,
+  },
+  halfWidth: {
+    flex: 1,
   },
   jobTypeContainer: {
     flexDirection: 'row',
@@ -386,43 +378,44 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   jobTypeButton: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    minWidth: 80,
-    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    backgroundColor: '#fff',
   },
-  activeJobType: {
+  activeJobTypeButton: {
     backgroundColor: '#006FFD',
     borderColor: '#006FFD',
   },
   jobTypeText: {
-    color: '#666',
     fontSize: 14,
-    fontWeight: '500',
+    color: '#666',
   },
   activeJobTypeText: {
     color: '#fff',
+  },
+  footer: {
+    padding: 20,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
   },
   submitButton: {
     backgroundColor: '#006FFD',
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 40,
   },
-  submitButtonDisabled: {
+  disabledButton: {
     backgroundColor: '#ccc',
   },
   submitButtonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
-export default AddJob; 
+export default EditJob; 

@@ -9,6 +9,9 @@ export default function JobLayout() {
     >
       <Stack.Screen name="index" />
       <Stack.Screen name="add-job" />
+      <Stack.Screen name="my-jobs" />
+      <Stack.Screen name="edit-job/[id]" />
+      <Stack.Screen name="job-details" />
     </Stack>
   );
 }

@@ -1,33 +1,80 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const DonationCard = ({
+  id,
   title,
   description,
-  type,
+  category,
   location,
   contact,
+  quantity,
+  imageUrl,
+  donorName,
   date,
-  imageUrl
+  onClaim,
+  userRole
 }) => {
-  const isNeed = type === 'need';
+  const router = useRouter();
+
+  const getCategoryIcon = (category) => {
+    switch (category) {
+      case 'food': return 'restaurant';
+      case 'clothing': return 'shirt';
+      case 'hygiene': return 'medical';
+      default: return 'gift';
+    }
+  };
+
+  const getCategoryColor = (category) => {
+    switch (category) {
+      case 'food': return '#28A745';
+      case 'clothing': return '#FF6B00';
+      case 'hygiene': return '#17A2B8';
+      default: return '#6C757D';
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Recently';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return date.toLocaleDateString();
+  };
+
+  const handleCardPress = () => {
+    if (userRole === 'worker') {
+      router.push(`/food_donation/donation-details?id=${id}`);
+    }
+  };
   
   return (
-    <View style={styles.card}>
+    <TouchableOpacity 
+      style={styles.card}
+      onPress={handleCardPress}
+      activeOpacity={userRole === 'worker' ? 0.7 : 1}
+    >
       <View style={styles.imageContainer}>
-        {imageUrl && (
+        {imageUrl ? (
           <Image 
             source={{ uri: imageUrl }} 
             style={styles.image}
           />
+        ) : (
+          <View style={[styles.placeholderImage, { backgroundColor: getCategoryColor(category) }]}>
+            <Ionicons name={getCategoryIcon(category)} size={32} color="#fff" />
+          </View>
         )}
-        <View style={[
-          styles.typeBadge,
-          isNeed ? styles.needBadge : styles.offerBadge
-        ]}>
-          <Text style={styles.typeText}>
-            {isNeed ? 'Needed' : 'Offering'}
+        <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(category) }]}>
+          <Text style={styles.categoryText}>
+            {category.charAt(0).toUpperCase() + category.slice(1)}
           </Text>
         </View>
       </View>
@@ -37,32 +84,50 @@ const DonationCard = ({
         <Text style={styles.description}>{description}</Text>
         
         <View style={styles.details}>
+          {quantity && (
+            <View style={styles.detailRow}>
+              <Ionicons name="scale" size={16} color="#666" />
+              <Text style={styles.detailValue}>{quantity}</Text>
+            </View>
+          )}
+          
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Location:</Text>
+            <Ionicons name="location" size={16} color="#666" />
             <Text style={styles.detailValue}>{location}</Text>
           </View>
+          
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Contact:</Text>
+            <Ionicons name="call" size={16} color="#666" />
             <Text style={styles.detailValue}>{contact}</Text>
           </View>
+          
+          {donorName && (
+            <View style={styles.detailRow}>
+              <Ionicons name="person" size={16} color="#666" />
+              <Text style={styles.detailValue}>{donorName}</Text>
+            </View>
+          )}
+          
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Posted:</Text>
-            <Text style={styles.detailValue}>{date}</Text>
+            <Ionicons name="time" size={16} color="#666" />
+            <Text style={styles.detailValue}>{formatDate(date)}</Text>
           </View>
         </View>
         
-        <TouchableOpacity 
-          style={[
-            styles.actionButton,
-            isNeed ? styles.needButton : styles.offerButton
-          ]}
-        >
-          <Text style={styles.buttonText}>
-            {isNeed ? 'I Can Help' : 'Request This'}
-          </Text>
-        </TouchableOpacity>
+        {userRole === 'worker' && onClaim && (
+          <TouchableOpacity 
+            style={styles.claimButton}
+            onPress={(e) => {
+              e.stopPropagation();
+              onClaim();
+            }}
+          >
+            <Ionicons name="checkmark-circle" size={20} color="#fff" />
+            <Text style={styles.claimButtonText}>Claim Donation</Text>
+          </TouchableOpacity>
+        )}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -85,7 +150,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 128,
   },
-  typeBadge: {
+  placeholderImage: {
+    width: '100%',
+    height: 128,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  categoryBadge: {
     position: 'absolute',
     top: 8,
     right: 8,
@@ -93,13 +164,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 12,
   },
-  needBadge: {
-    backgroundColor: '#FF6B00',
-  },
-  offerBadge: {
-    backgroundColor: '#28A745',
-  },
-  typeText: {
+  categoryText: {
     color: '#fff',
     fontSize: 12,
     fontWeight: '500',
@@ -117,35 +182,32 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 12,
+    lineHeight: 20,
   },
   details: {
     marginBottom: 12,
   },
   detailRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 4,
-  },
-  detailLabel: {
-    fontSize: 14,
-    color: '#666',
+    alignItems: 'center',
+    marginBottom: 6,
   },
   detailValue: {
     fontSize: 14,
     color: '#333',
+    marginLeft: 8,
+    flex: 1,
   },
-  actionButton: {
+  claimButton: {
+    backgroundColor: '#28A745',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: 12,
     borderRadius: 8,
-    alignItems: 'center',
+    gap: 8,
   },
-  needButton: {
-    backgroundColor: '#FF6B00',
-  },
-  offerButton: {
-    backgroundColor: '#28A745',
-  },
-  buttonText: {
+  claimButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',

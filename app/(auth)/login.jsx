@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TextInput, Text, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { Link, useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserContext } from '../../components/AuthGate';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -8,6 +10,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const { setUser } = useContext(UserContext);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -17,18 +20,49 @@ export default function LoginScreen() {
     setLoading(true);
     setError('');
     try {
+      console.log('Attempting login for:', email);
       const response = await fetch('http://192.168.0.104:5000/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
+      
+      console.log('Login response status:', response.status);
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Login failed');
-      // Store token if needed: await AsyncStorage.setItem('token', data.token);
-      Alert.alert('Success', 'Logged in successfully!');
-      router.replace('/'); // Navigate to home screen
+      console.log('Login response data:', data);
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+      
+      // Store token and user data
+      await AsyncStorage.setItem('token', data.token);
+      await AsyncStorage.setItem('user', JSON.stringify(data.user));
+      
+      // Immediately update the user context
+      setUser(data.user);
+      
+      console.log('User data stored, redirecting to:', data.user.role);
+      
+      // Small delay to ensure context is updated
+      setTimeout(() => {
+        // Redirect based on role with stack reset
+        if (data.user.role === 'admin') {
+          router.replace('/admin/admin', { reset: true });
+        } else if (data.user.role === 'worker') {
+          router.replace('/', { reset: true });
+        } else if (data.user.role === 'donor') {
+          router.replace('/donor-dashboard', { reset: true });
+        } else if (data.user.role === 'employer') {
+          router.replace('/employer-dashboard', { reset: true });
+        } else {
+          router.replace('/', { reset: true }); // fallback
+        }
+      }, 100);
     } catch (err) {
+      console.error('Login error:', err);
       setError(err.message);
+      Alert.alert('Login Error', err.message);
     } finally {
       setLoading(false);
     }

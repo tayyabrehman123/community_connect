@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { ChevronRight, User, Lock, Globe, Bell, BookmarkCheck, Shield, Trash2, LogOut } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../firebaseConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserContext } from '../../components/AuthGate';
+import { ArrowLeft} from 'lucide-react-native';
+
+// import { signOut } from 'firebase/auth';
+// import { auth } from '../../firebaseConfig';
 
 const settingsSections = [
   {
@@ -34,20 +38,20 @@ const settingsSections = [
     description: 'Manage your notifications',
     route: '/settings/notifications'
   },
-  {
-    id: 'saved',
-    icon: BookmarkCheck,
-    title: 'Saved Jobs & Locations',
-    description: 'View your saved items',
-    route: '/settings/saved-items'
-  },
-  {
-    id: 'privacy',
-    icon: Shield,
-    title: 'Privacy Settings',
-    description: 'Manage your privacy preferences',
-    route: '/settings/privacy'
-  },
+  // {
+  //   id: 'saved',
+  //   icon: BookmarkCheck,
+  //   title: 'Saved Jobs & Locations',
+  //   description: 'View your saved items',
+  //   route: '/settings/saved-items'
+  // },
+  // {
+  //   id: 'privacy',
+  //   icon: Shield,
+  //   title: 'Privacy Settings',
+  //   description: 'Manage your privacy preferences',
+  //   route: '/settings/privacy'
+  // },
   {
     id: 'delete',
     icon: Trash2,
@@ -60,22 +64,55 @@ const settingsSections = [
 
 const Settings = () => {
   const router = useRouter();
+  const { user, setUser } = useContext(UserContext);
 
   const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      router.replace('/(auth)/login');
-    } catch (err) {
-      Alert.alert('Logout Error', err.message);
-    }
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await AsyncStorage.clear();
+              setUser(null);
+              router.replace('/login', { reset: true });
+            } catch (error) {
+              Alert.alert('Error', 'Failed to logout: ' + error.message);
+            }
+          }
+        }
+      ]
+    );
   };
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <ArrowLeft size={24} color="#FFFFFF" />
+        </TouchableOpacity>
         <Text style={styles.title}>Settings</Text>
-        <Text style={styles.subtitle}>Manage your account preferences</Text>
+        <Text style={styles.stitle}>Manage your account preferences</Text>
       </View>
+      {/* <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <ChevronRight size={25} color="#fff" style={{ transform: [{ rotate: '180deg' }] }} />
+        </TouchableOpacity>
+        <View style={styles.headerContent}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <ArrowLeft size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+          <Text style={styles.title}>Settings</Text>
+          <Text style={styles.subtitle}>Manage your account preferences</Text>
+        </View>
+      </View> */}
 
       <View style={styles.settingsList}>
         {settingsSections.map((section) => (
@@ -127,17 +164,31 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     backgroundColor: '#006FFD',
+    // flexDirection: 'row',
+    // alignItems: 'center',
+  },
+  backButton: {
+    marginRight: 16,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#FFFFFF',
+    marginLeft:45,
+    marginTop:5,
   },
-  subtitle: {
+  stitle: {
     fontSize: 16,
+    //fontWeight: 'bold',
     color: '#FFFFFF',
-    marginTop: 4,
+    marginLeft:45,
+    marginTop:5,
   },
+  // subtitle: {
+  //   fontSize: 16,
+  //   color: '#FFFFFF',
+  //   marginTop: 4,
+  // },
   settingsList: {
     padding: 16,
   },
@@ -188,6 +239,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    padding: 10,
+    zIndex: 1,
+  },
+  headerContent: {
+    marginTop: 40,
   },
 });
 

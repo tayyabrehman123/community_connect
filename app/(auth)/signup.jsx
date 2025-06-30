@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text, TouchableOpacity, StyleSheet, Alert, Image, ScrollView, ScrollViewComponent } from 'react-native';
+import { View, TextInput, Text, TouchableOpacity, StyleSheet, Alert, Image, ScrollView, ScrollViewComponent, Modal, FlatList } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 
 export default function SignupScreen() {
@@ -7,13 +7,28 @@ export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [cnic, setCnic] = useState('');
   const [role, setRole] = useState('worker');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [profession, setProfession] = useState('');
+  const [showProfessionDropdown, setShowProfessionDropdown] = useState(false);
+  const professions = [
+    'Construction Worker',
+    'Plumber',
+    'Driver',
+    'Electrician',
+    'House Keeper',
+    'Painter',
+    'Carpenter',
+    'Cleaner',
+    'Mechanic',
+    'Welder'
+  ];
   const router = useRouter();
 
   const handleSignup = async () => {
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword || !cnic) {
       Alert.alert('Error', 'Please fill all fields.');
       return;
     }
@@ -21,13 +36,19 @@ export default function SignupScreen() {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
+    if (role === 'worker' && !profession) {
+      Alert.alert('Error', 'Please select a profession.');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
+      const body = { name, email, password, cnic, role };
+      if (role === 'worker') body.profession = profession;
       const response = await fetch('http://192.168.0.104:5000/api/users/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role })
+        body: JSON.stringify(body)
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Signup failed');
@@ -63,6 +84,13 @@ export default function SignupScreen() {
       />
       <TextInput
         style={styles.input}
+        placeholder="CNIC"
+        value={cnic}
+        onChangeText={setCnic}
+        placeholderTextColor="#999"
+      />
+      <TextInput
+        style={styles.input}
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
@@ -89,6 +117,45 @@ export default function SignupScreen() {
           <Text style={role === 'employer' ? styles.selectedRoleText : styles.roleText}>Employer</Text>
         </TouchableOpacity>
       </View>
+      {role === 'worker' && (
+        <>
+          <Text style={styles.label}>Profession</Text>
+          <TouchableOpacity
+            style={[styles.input, { justifyContent: 'center' }]}
+            onPress={() => setShowProfessionDropdown(true)}
+          >
+            <Text style={{ color: profession ? '#333' : '#999' }}>
+              {profession || 'Select Profession'}
+            </Text>
+          </TouchableOpacity>
+          <Modal
+            visible={showProfessionDropdown}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowProfessionDropdown(false)}
+          >
+            <TouchableOpacity style={styles.modalOverlay} onPress={() => setShowProfessionDropdown(false)}>
+              <View style={styles.dropdownModal}>
+                <FlatList
+                  data={professions}
+                  keyExtractor={(item) => item}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={styles.dropdownItem}
+                      onPress={() => {
+                        setProfession(item);
+                        setShowProfessionDropdown(false);
+                      }}
+                    >
+                      <Text style={styles.dropdownItemText}>{item}</Text>
+                    </TouchableOpacity>
+                  )}
+                />
+              </View>
+            </TouchableOpacity>
+          </Modal>
+        </>
+      )}
       <TouchableOpacity style={styles.button} onPress={handleSignup} disabled={loading}>
         <Text style={styles.buttonText}>{loading ? 'Signing Up...' : 'Sign Up'}</Text>
       </TouchableOpacity>
@@ -109,7 +176,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    paddingTop:50, 
+    paddingTop:50,
     backgroundColor: '#fff',
   },
   logo: {
@@ -200,5 +267,29 @@ const styles = StyleSheet.create({
   error: {
     color: 'red',
     marginTop: 12,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownModal: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 10,
+    width: 300,
+    maxHeight: 350,
+    elevation: 5,
+  },
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  dropdownItemText: {
+    fontSize: 16,
+    color: '#333',
   },
 }); 

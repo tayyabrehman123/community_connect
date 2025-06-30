@@ -1,12 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { View, TextInput, Text, ScrollView, Image, StyleSheet, Modal, TouchableOpacity } from "react-native";
 import { useRouter } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
 import { Card, Button } from 'react-native-paper';
+import { UserContext } from '../components/AuthGate';
 
 const Home = () => {
   const router = useRouter();
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const { user, loading } = useContext(UserContext);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/login', { reset: true });
+    } else if (user && user.role !== 'worker') {
+      // Redirect non-workers to their correct dashboard
+      if (user.role === 'admin') {
+        router.replace('/admin/admin', { reset: true });
+      } else if (user.role === 'donor') {
+        router.replace('/donor-dashboard', { reset: true });
+      } else if (user.role === 'employer') {
+        router.replace('/employer-dashboard', { reset: true });
+      } else {
+        router.replace('/login', { reset: true });
+      }
+    }
+  }, [loading, user]);
+
+  if (loading) return null;
+  if (!user) return null;
+  if (user.role !== 'worker') return null;
 
   const openSidebar = () => setSidebarVisible(true);
   const closeSidebar = () => setSidebarVisible(false);
@@ -40,7 +63,15 @@ const Home = () => {
       </Modal>
 
       <ScrollView style={styles.container}>
+        {/* {user && (
+            <View style={{ flex: 1 }}>
+              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
+                Welcome, {user.name} ({user.role})
+              </Text>
+            </View>
+          )} */}
         <View style={styles.header}>
+          
           <Text style={styles.headerTitle}>Community Connect</Text>
           <TouchableOpacity onPress={openSidebar} style={styles.menuButtonRight}>
             <Ionicons name="menu" size={28} color="#FFF" />
@@ -48,12 +79,55 @@ const Home = () => {
           <Text style={styles.headerSubtitle}>Support for everyone in need</Text>
         </View>
         
+        {user && (
+          <View
+          style={{
+            flex: 1,
+            backgroundColor: '#fff',
+            paddingHorizontal: 20,
+            paddingTop: 20,
+            paddingBottom: 12,
+            borderBottomWidth: 1,
+            borderColor: '#eee',
+            borderRadius: 19,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.05,
+            shadowRadius: 5,
+            elevation: 2,
+            marginBottom:10,
+            marginInline: 10,
+          }}
+        >
+          <Text
+            style={{
+              color: '#1e90ff',
+              fontSize: 24,
+              fontWeight: 'bold',
+              marginBottom: 4,
+            }}
+          >
+            Welcome,
+          </Text>
+          <Text
+            style={{
+              color: '#333',
+              fontSize: 20,
+              fontWeight: '600',
+            }}
+          >
+            {user.name}
+          </Text>
+        </View>
+        
+            // <View style={{ flex: 1, backgroundColor:'#fff', paddingLeft: 19,paddingTop:10,}}>
+            //   <Text style={{ color: '#666', fontWeight: 'bold',fontSize: 18 }}>
+            //     Welcome, {user.name} {/*({user.role})*/}
+            //   </Text>
+            // </View>
+          )}
         <View style={styles.content}>
           {/* Add test buttons here */}
-          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16, marginTop: 8 }}>
-            <Button title="Login" onPress={goToLogin}>admin</Button>
-            <Button title="Login" onPress={goToSignup}>signup</Button>
-          </View>
           <View style={styles.searchContainer}>
             <Ionicons name="search" size={20} color="gray" style={styles.searchIcon} />
             <TextInput 
@@ -65,6 +139,12 @@ const Home = () => {
           
           <Text style={styles.sectionTitle}>Services</Text>
     
+          {user?.role === 'admin' && (
+            <Button mode="contained" style={{ marginBottom: 16 }} onPress={() => router.push('/admin/manage-users')}>
+              Manage Users (Admin Only)
+            </Button>
+          )}
+
           <View style={styles.cardContainer}>
             <Card style={styles.card}>
               <Card.Content style={styles.cardContent}>
@@ -161,6 +241,11 @@ const Home = () => {
             </Card>
           </View>
           
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16, marginTop: 8 }}>
+            <Button title="Login" onPress={goToLogin}>admin</Button>
+            {/* <Button title="Login" onPress={goToSignup}>signup</Button> */}
+          </View>
+          
         </View>
         
       </ScrollView>
@@ -172,6 +257,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#006FFD',
+    borderRadius:0,
   },
   header: {
     marginLeft: 20,
@@ -188,7 +274,8 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     zIndex: 2,
-    padding: 8,
+    padding: 10,
+    paddingRight: 20,
   },
   headerTitle: {
     fontSize: 24,
