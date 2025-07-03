@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, StyleSheet, Alert, Image, ScrollView, ScrollViewComponent, Modal, FlatList } from 'react-native';
 import { Link, useRouter } from 'expo-router';
+import config from '../../config';
 
 export default function SignupScreen() {
   const [name, setName] = useState('');
@@ -45,7 +46,7 @@ export default function SignupScreen() {
     try {
       const body = { name, email, password, cnic, role };
       if (role === 'worker') body.profession = profession;
-      const response = await fetch('http://192.168.0.104:5000/api/users/register', {
+      const response = await fetch(`${config.BACKEND_URL}/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)

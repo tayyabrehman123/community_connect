@@ -2,28 +2,28 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Check } from 'lucide-react-native';
+import i18n from '../../i18n';
 
 const languages = [
   { code: 'en', name: 'English', nativeName: 'English' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español' },
-  { code: 'fr', name: 'French', nativeName: 'Français' },
-  { code: 'de', name: 'German', nativeName: 'Deutsch' },
-  { code: 'zh', name: 'Chinese', nativeName: '中文' },
-  { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
-  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
-  { code: 'bn', name: 'Bengali', nativeName: 'বাংলা' },
+  // { code: 'es', name: 'Spanish', nativeName: 'Español' },
+  // { code: 'fr', name: 'French', nativeName: 'Français' },
+  // { code: 'de', name: 'German', nativeName: 'Deutsch' },
+  // { code: 'zh', name: 'Chinese', nativeName: '中文' },
+  // { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
+  // { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
+  // { code: 'bn', name: 'Bengali', nativeName: 'বাংলা' },
   { code: 'ur', name: 'Urdu', nativeName: 'اردو' },
-  { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
+  // { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
 ];
 
 const LanguageSettings = () => {
   const router = useRouter();
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language || 'en');
 
   const handleLanguageSelect = (code) => {
     setSelectedLanguage(code);
-    // TODO: Implement language change functionality
-    // After a short delay to show the selection
+    i18n.changeLanguage(code); // Change app language
     setTimeout(() => {
       router.back();
     }, 500);

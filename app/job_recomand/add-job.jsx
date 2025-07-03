@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -14,11 +14,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserContext } from '../../components/AuthGate';
+import config from '../../config';
 
 const AddJob = () => {
   const router = useRouter();
-  const { user } = React.useContext(UserContext);
-  const [loading, setLoading] = useState(false);
+  const { user, loading } = React.useContext(UserContext);
+  const [loadingLocal, setLoading] = useState(false);
+  // Debug: log user and loading from context
+  console.log('User in AddJob:', user, 'Loading:', loading);
+  // Debug: log user from AsyncStorage
+  useEffect(() => {
+    AsyncStorage.getItem('user').then(data => {
+      console.log('User in AsyncStorage:', data);
+    });
+  }, []);
   const [formData, setFormData] = useState({
     title: '',
     company: '',
@@ -69,7 +78,7 @@ const AddJob = () => {
   };
 
   const handleSubmit = async () => {
-    if (!user || !user._id) {
+    if (!user || !user.id) {
       Alert.alert('Error', 'User not loaded. Please log in again.');
       return;
     }
@@ -78,7 +87,7 @@ const AddJob = () => {
     setLoading(true);
     try {
       console.log('Posting job as user:', user);
-      const response = await fetch('http://192.168.0.104:5000/api/jobs', {
+      const response = await fetch(`${config.BACKEND_URL}/api/jobs`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json'
@@ -89,7 +98,7 @@ const AddJob = () => {
           salaryMin: parseInt(formData.salaryMin),
           salaryMax: parseInt(formData.salaryMax),
           requirements: formData.requirements.split(',').map(skill => skill.trim()).filter(skill => skill),
-          postedBy: user._id
+          postedBy: user.id
         })
       });
       
@@ -108,6 +117,14 @@ const AddJob = () => {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <KeyboardAvoidingView 
@@ -140,7 +157,7 @@ const AddJob = () => {
 
           {/* Company Name */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Company Name *</Text>
+            <Text style={styles.label}>Company / Employer Name *</Text>
             <TextInput
               style={styles.input}
               placeholder="e.g., FoodPanda Pakistan"
@@ -163,7 +180,7 @@ const AddJob = () => {
           {/* Salary Range */}
           <View style={styles.salaryContainer}>
             <View style={[styles.inputGroup, { flex: 1, marginRight: 10 }]}>
-              <Text style={styles.label}>Minimum Salary (PKR) *</Text>
+              <Text style={styles.label}>Minimum pay (PKR)*</Text>
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 25000"
@@ -173,7 +190,7 @@ const AddJob = () => {
               />
             </View>
             <View style={[styles.inputGroup, { flex: 1 }]}>
-              <Text style={styles.label}>Maximum Salary (PKR) *</Text>
+              <Text style={styles.label}>Maximum pay (PKR)*</Text>
               <TextInput
                 style={styles.input}
                 placeholder="e.g., 35000"
@@ -313,12 +330,12 @@ const AddJob = () => {
 
           {/* Submit Button */}
           <TouchableOpacity 
-            style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+            style={[styles.submitButton, loadingLocal && styles.submitButtonDisabled]}
             onPress={handleSubmit}
-            disabled={loading}
+            disabled={loadingLocal}
           >
             <Text style={styles.submitButtonText}>
-              {loading ? 'Posting Job...' : 'Post Job'}
+              {loadingLocal ? 'Posting Job...' : 'Post Job'}
             </Text>
           </TouchableOpacity>
         </View>

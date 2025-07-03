@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Alert, TextInput, Modal, TouchableOpacity } from 'react-native';
 import { Button, Card, IconButton } from 'react-native-paper';
+import config from '../../config';
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -19,7 +20,7 @@ const ManageUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://192.168.0.104:5000/api/users');
+      const response = await fetch(`${config.BACKEND_URL}/api/users`);
       if (!response.ok) throw new Error('Failed to fetch users');
       const data = await response.json();
       setUsers(data);
@@ -38,7 +39,7 @@ const ManageUsers = () => {
         style: 'destructive', 
         onPress: async () => {
           try {
-            const response = await fetch(`http://192.168.0.104:5000/api/users/${id}`, {
+            const response = await fetch(`${config.BACKEND_URL}/api/users/${id}`, {
               method: 'DELETE'
             });
             if (!response.ok) throw new Error('Failed to remove user');
@@ -62,7 +63,7 @@ const ManageUsers = () => {
       return;
     }
     try {
-      const response = await fetch('http://192.168.0.104:5000/api/users/register', {
+      const response = await fetch(`${config.BACKEND_URL}/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -288,4 +289,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ManageUsers; 
+export default ManageUsers;

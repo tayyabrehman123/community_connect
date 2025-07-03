@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import DonationCard from '../../components/DonationCard';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import config from '../../config';
 
 const FoodDonation = () => {
   const router = useRouter();
@@ -19,7 +20,7 @@ const FoodDonation = () => {
     { id: 'food', label: 'Food' },
     { id: 'clothing', label: 'Clothing' },
     { id: 'hygiene', label: 'Hygiene' },
-    { id: 'other', label: 'Other' }
+    // { id: 'other', label: 'Other' }
   ];
 
   // Mock data for donations
@@ -110,7 +111,7 @@ const FoodDonation = () => {
   const fetchDonations = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://192.168.0.104:5000/api/donations');
+      const response = await fetch(`${config.BACKEND_URL}/api/donations`);
       
       if (response.ok) {
         const data = await response.json();
@@ -189,7 +190,7 @@ const FoodDonation = () => {
           <Text style={styles.headerTitle}>Food Donations</Text>
           <Text style={styles.headerSubtitle}>Available donations for collection</Text>
         </View>
-        <View style={styles.headerButtons}>
+        {/* <View style={styles.headerButtons}>
           <TouchableOpacity 
             style={styles.myDonationsButton}
             onPress={() => {
@@ -211,14 +212,14 @@ const FoodDonation = () => {
           >
             <Ionicons name="add" size={24} color="#fff" />
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
       
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search donations by title, location..."
+          placeholder="Search donations"
           placeholderTextColor="#666"
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -340,9 +341,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginHorizontal: 20,
     marginVertical: 20,
-    borderRadius: 12,
+    borderRadius: 20,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

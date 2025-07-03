@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, RefreshCon
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { UserContext } from '../../components/AuthGate';
+import config from '../../config';
 
 const MyJobs = () => {
   const router = useRouter();
@@ -26,7 +27,7 @@ const MyJobs = () => {
   const fetchMyJobs = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://192.168.0.104:5000/api/jobs/my-jobs?userId=${user._id}`);
+      const response = await fetch(`${config.BACKEND_URL}/api/jobs/my-jobs?userId=${user.id}`);
       if (!response.ok) throw new Error('Failed to fetch jobs');
       const data = await response.json();
       setJobs(data);
@@ -60,7 +61,7 @@ const MyJobs = () => {
 
   const deleteJob = async (jobId) => {
     try {
-      const response = await fetch(`http://192.168.0.104:5000/api/jobs/${jobId}`, {
+      const response = await fetch(`${config.BACKEND_URL}/api/jobs/${jobId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'

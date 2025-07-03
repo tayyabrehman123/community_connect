@@ -95,7 +95,7 @@ const DonorDashboard = () => {
         
         <View style={styles.content}>
           {/* Quick Stats */}
-          <View style={styles.statsContainer}>
+          {/* <View style={styles.statsContainer}>
             <View style={styles.statCard}>
               <Ionicons name="gift-outline" size={24} color="#006FFD" />
               <Text style={styles.statNumber}>0</Text>
@@ -111,7 +111,7 @@ const DonorDashboard = () => {
               <Text style={styles.statNumber}>0</Text>
               <Text style={styles.statLabel}>People Helped</Text>
             </View>
-          </View>
+          </View> */}
 
           {/* Main Action Cards */}
           <Text style={styles.sectionTitle}>Quick Actions</Text>

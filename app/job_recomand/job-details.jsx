@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import config from '../../config';
 
 const JobDetails = () => {
   const router = useRouter();
@@ -16,7 +17,7 @@ const JobDetails = () => {
   const fetchJobDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://192.168.0.104:5000/api/jobs/${jobId}`);
+      const response = await fetch(`${config.BACKEND_URL}/api/jobs/${jobId}`);
       if (!response.ok) throw new Error('Failed to fetch job details');
       const data = await response.json();
       setJob(data);

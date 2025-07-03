@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import "../global.css"; // Import global styles for NativeWind
 import { UserProvider } from '../components/AuthGate';
+import '../i18n';
 
 export default function Layout() {
   return (

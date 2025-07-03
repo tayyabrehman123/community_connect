@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -12,10 +12,15 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import config from '../../config';
+import { UserContext } from '../../components/AuthGate';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 
 const AddDonation = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { user } = React.useContext(UserContext);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -31,6 +36,34 @@ const AddDonation = () => {
     latitude: '',
     longitude: ''
   });
+  const [mapRegion, setMapRegion] = useState({
+    latitude: 31.5204,
+    longitude: 74.3587,
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05,
+  });
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission denied', 'Location permission is required to pick your current location.');
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      setMapRegion({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+      setFormData(f => ({
+        ...f,
+        latitude: location.coords.latitude.toString(),
+        longitude: location.coords.longitude.toString(),
+      }));
+    })();
+  }, []);
 
   const handleSubmit = async () => {
     // Validate required fields
@@ -64,26 +97,29 @@ const AddDonation = () => {
     try {
       setLoading(true);
       
-      const response = await fetch('http://192.168.0.104:5000/api/donations', {
+      const donationData = {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        quantity: formData.quantity,
+        location: formData.location,
+        address: formData.address,
+        latitude: lat,
+        longitude: lng,
+        contact: formData.contact,
+        expiryDate: formData.expiryDate,
+        imageUrl: formData.imageUrl,
+        pickupInstructions: formData.pickupInstructions,
+        availableTime: formData.availableTime,
+        donorId: user.id
+      };
+
+      const response = await fetch(`${config.BACKEND_URL}/api/donations`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          title: formData.title,
-          description: formData.description,
-          category: formData.category,
-          quantity: formData.quantity,
-          location: formData.location,
-          address: formData.address,
-          latitude: lat,
-          longitude: lng,
-          contact: formData.contact,
-          expiryDate: formData.expiryDate,
-          imageUrl: formData.imageUrl,
-          pickupInstructions: formData.pickupInstructions,
-          availableTime: formData.availableTime
-        })
+        body: JSON.stringify(donationData)
       });
 
       if (response.ok) {
@@ -195,41 +231,52 @@ const AddDonation = () => {
             />
           </View>
 
-          {/* Detailed Address */}
+          {/* Address */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Detailed Address *</Text>
+            <Text style={styles.label}>Address *</Text>
             <TextInput
-              style={[styles.input, styles.textArea]}
-              placeholder="e.g., House #123, Street 5, Gulberg III, Lahore"
-              multiline
-              numberOfLines={3}
+              style={styles.input}
+              placeholder="Full address for pickup"
               value={formData.address}
               onChangeText={(text) => setFormData({...formData, address: text})}
             />
           </View>
 
-          {/* Coordinates */}
-          <View style={styles.coordinatesContainer}>
-            <View style={styles.coordinateField}>
-              <Text style={styles.label}>Latitude *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g., 31.5204"
-                keyboardType="numeric"
-                value={formData.latitude}
-                onChangeText={(text) => setFormData({...formData, latitude: text})}
+          {/* Map Picker for Location */}
+          <Text style={{ alignSelf: 'flex-start', marginBottom: 8 }}>Tap on the map to select donation location:</Text>
+          <MapView
+            style={{ width: '100%', height: 250, marginBottom: 12, borderRadius: 12 }}
+            region={mapRegion}
+            onPress={e => {
+              setFormData({
+                ...formData,
+                latitude: e.nativeEvent.coordinate.latitude.toString(),
+                longitude: e.nativeEvent.coordinate.longitude.toString(),
+              });
+              setMapRegion({
+                ...mapRegion,
+                latitude: e.nativeEvent.coordinate.latitude,
+                longitude: e.nativeEvent.coordinate.longitude,
+              });
+            }}
+            showsUserLocation={true}
+          >
+            {formData.latitude && formData.longitude ? (
+              <Marker
+                coordinate={{
+                  latitude: parseFloat(formData.latitude),
+                  longitude: parseFloat(formData.longitude),
+                }}
               />
-            </View>
-            <View style={styles.coordinateField}>
-              <Text style={styles.label}>Longitude *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g., 74.3587"
-                keyboardType="numeric"
-                value={formData.longitude}
-                onChangeText={(text) => setFormData({...formData, longitude: text})}
-              />
-            </View>
+            ) : null}
+          </MapView>
+          <View style={{ flexDirection: 'row', marginBottom: 16 }}>
+            <Text style={{ marginRight: 16 }}>
+              Latitude: {formData.latitude}
+            </Text>
+            <Text>
+              Longitude: {formData.longitude}
+            </Text>
           </View>
 
           {/* Contact Information */}
@@ -412,14 +459,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
-  },
-  coordinatesContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 24,
-  },
-  coordinateField: {
-    flex: 1,
   },
 });
 

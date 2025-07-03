@@ -3,6 +3,7 @@ import { View, TextInput, Text, TouchableOpacity, StyleSheet, Alert, Image } fro
 import { Link, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserContext } from '../../components/AuthGate';
+import config from '../../config';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -21,7 +22,7 @@ export default function LoginScreen() {
     setError('');
     try {
       console.log('Attempting login for:', email);
-      const response = await fetch('http://192.168.0.104:5000/api/users/login', {
+      const response = await fetch(`${config.BACKEND_URL}/api/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })

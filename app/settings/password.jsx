@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert 
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import config from '../../config';
 
 const PasswordSettings = () => {
   const router = useRouter();
@@ -39,7 +40,7 @@ const PasswordSettings = () => {
     }
     const token = await AsyncStorage.getItem('token');
     try {
-      const res = await fetch('http://192.168.0.104:5000/api/users/change-password', {
+      const res = await fetch(`${config.BACKEND_URL}/api/users/change-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ currentPassword: passwords.current, newPassword: passwords.new }),

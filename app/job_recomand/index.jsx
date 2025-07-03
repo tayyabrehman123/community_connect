@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import JobCard from '../../components/JobCard';
 import { useRouter } from 'expo-router';
 import { UserContext } from '../../components/AuthGate';
+import config from '../../config';
 
 const JobRecomand = () => {
   const router = useRouter();
@@ -21,7 +22,7 @@ const JobRecomand = () => {
     { id: 'full-time', label: 'Full-time' },
     { id: 'part-time', label: 'Part-time' },
     { id: 'contract', label: 'Contract' },
-    { id: 'internship', label: 'Internship' }
+    // { id: 'internship', label: 'Internship' }
   ];
 
   // Test function to switch roles
@@ -41,7 +42,7 @@ const JobRecomand = () => {
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      let url = 'http://192.168.0.104:5000/api/jobs';
+      let url = `${config.BACKEND_URL}/api/jobs`;
       if (userRole === 'worker' && userProfession) {
         url += `?profession=${encodeURIComponent(userProfession)}`;
       }
@@ -89,14 +90,14 @@ const JobRecomand = () => {
           <Text style={styles.headerSubtitle}>
             {userRole === 'worker' ? 'Jobs matching your skills' : 'Manage your job postings'}
           </Text>
-          <TouchableOpacity 
+          {/* <TouchableOpacity 
             style={styles.roleToggleButton}
             onPress={toggleUserRole}
           >
             <Text style={styles.roleToggleText}>
               Switch to {userRole === 'worker' ? 'Employer' : 'Worker'} View
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         {canPostJob && (
           <View style={styles.headerButtons}>
@@ -155,16 +156,16 @@ const JobRecomand = () => {
       {userRole === 'worker' && (
         <View style={styles.recommendationSection}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>AI Recommendations</Text>
+            <Text style={styles.sectionTitle}>Skill based job Recommendations</Text>
             <TouchableOpacity style={styles.updateProfileButton}>
-              <Text style={styles.updateProfileText}>Update Profile</Text>
-              <Ionicons name="arrow-forward" size={16} color="#006FFD" />
+              {/* <Text style={styles.updateProfileText}>Update Profile</Text> */}
+              {/* <Ionicons name="arrow-forward" size={16} color="#006FFD" /> */}
             </TouchableOpacity>
           </View>
           
           <View style={styles.recommendationBox}>
             <Text style={styles.recommendationText}>
-              Based on your skills in <Text style={styles.highlightText}>driving, customer service, and flexible availability</Text>, 
+              Based on your skills in <Text style={styles.highlightText}>driving, electrician or any other service, and flexible availability</Text>, 
               we've found jobs that match your profile.
             </Text>
           </View>
@@ -295,7 +296,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     margin: 20,
-    borderRadius: 12,
+    borderRadius: 20,
     paddingHorizontal: 16,
     height: 50,
     shadowColor: '#000',
@@ -430,7 +431,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#006FFD',
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     shadowColor: '#006FFD',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,

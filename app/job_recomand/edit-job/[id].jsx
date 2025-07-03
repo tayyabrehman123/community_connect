@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import config from '../../../config';
 
 const EditJob = () => {
   const router = useRouter();
@@ -40,7 +41,7 @@ const EditJob = () => {
   const fetchJob = async () => {
     try {
       setFetching(true);
-      const response = await fetch(`http://192.168.0.104:5000/api/jobs/${id}`);
+      const response = await fetch(`${config.BACKEND_URL}/api/jobs/${id}`);
       if (!response.ok) throw new Error('Failed to fetch job');
       
       const job = await response.json();
@@ -86,7 +87,7 @@ const EditJob = () => {
     
     setLoading(true);
     try {
-      const response = await fetch(`http://192.168.0.104:5000/api/jobs/${id}`, {
+      const response = await fetch(`${config.BACKEND_URL}/api/jobs/${id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json'

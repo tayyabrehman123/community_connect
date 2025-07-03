@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useContext } from 'react';
 import { UserContext } from '../../components/AuthGate';
+import config from '../../config';
 
 const MyDonations = () => {
   const router = useRouter();
@@ -12,16 +13,18 @@ const MyDonations = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
-  const { setUser } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
-    fetchMyDonations();
-  }, []);
+    if (user) {
+      fetchMyDonations();
+    }
+  }, [user]);
 
   const fetchMyDonations = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://192.168.0.104:5000/api/donations/my-donations');
+      const response = await fetch(`${config.BACKEND_URL}/api/donations/my-donations?userId=${user.id}`);
       
       if (response.ok) {
         const data = await response.json();
@@ -80,7 +83,7 @@ const MyDonations = () => {
 
   const deleteDonation = async (donationId) => {
     try {
-      const response = await fetch(`http://192.168.0.104:5000/api/donations/${donationId}`, {
+      const response = await fetch(`${config.BACKEND_URL}/api/donations/${donationId}`, {
         method: 'DELETE'
       });
 
@@ -214,14 +217,14 @@ const MyDonations = () => {
           <Text style={styles.statNumber}>{donations.filter(d => d.status === 'available').length}</Text>
           <Text style={styles.statLabel}>Available</Text>
         </View>
-        <View style={styles.statCard}>
+        {/* <View style={styles.statCard}>
           <Text style={styles.statNumber}>{donations.filter(d => d.status === 'claimed').length}</Text>
           <Text style={styles.statLabel}>Claimed</Text>
         </View>
         <View style={styles.statCard}>
           <Text style={styles.statNumber}>{donations.filter(d => d.status === 'completed').length}</Text>
           <Text style={styles.statLabel}>Completed</Text>
-        </View>
+        </View> */}
       </View>
 
       {/* Donations List */}

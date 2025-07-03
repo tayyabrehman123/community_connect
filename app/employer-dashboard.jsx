@@ -92,7 +92,7 @@ const EmployerDashboard = () => {
               <Text style={styles.userName}>{user?.name || 'Employer'}</Text>
             </View>
             <TouchableOpacity onPress={openSidebar} style={styles.settingsButton}>
-              <Ionicons name="settings-outline" size={28} color="#006FFD" />
+              <Ionicons name="settings-outline" size={28} color="#fff" />
             </TouchableOpacity>
           </View>
           <Text style={styles.headerSubtitle}>Manage your job postings and find talent</Text>
@@ -100,7 +100,7 @@ const EmployerDashboard = () => {
         
         <View style={styles.content}>
           {/* Quick Stats */}
-          <View style={styles.statsContainer}>
+          {/* <View style={styles.statsContainer}>
             <View style={styles.statCard}>
               <Ionicons name="briefcase-outline" size={24} color="#006FFD" />
               <Text style={styles.statNumber}>0</Text>
@@ -116,7 +116,7 @@ const EmployerDashboard = () => {
               <Text style={styles.statNumber}>0</Text>
               <Text style={styles.statLabel}>Job Views</Text>
             </View>
-          </View>
+          </View> */}
 
           {/* Main Action Cards */}
           <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -373,6 +373,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 20,
+    color: '#006FFD'
   },
   sidebarButton: {
     flexDirection: 'row',
@@ -383,7 +384,8 @@ const styles = StyleSheet.create({
   },
   sidebarButtonText: {
     fontSize: 16,
-    color: '#333',
+    fontWeight: 'bold',
+    color: '#006FFD',
   },
 });
 

@@ -3,6 +3,7 @@ import { View, StyleSheet, ActivityIndicator, Alert, Text, Modal, TouchableOpaci
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { Ionicons } from '@expo/vector-icons';
+import config from '../config';
 
 export default function Shelter() {
   const [location, setLocation] = useState(null);
@@ -23,7 +24,7 @@ export default function Shelter() {
       setLoading(false);
     })();
     // Fetch shelters from backend
-    fetch('http://192.168.0.104:5000/api/shelters')
+    fetch(`${config.BACKEND_URL}/api/shelters`)
       .then(res => res.json())
       .then(data => setShelters(data))
       .catch(err => console.log(err));

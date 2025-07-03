@@ -4,6 +4,7 @@ import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import config from '../../config';
 
 export default function DonationDetails() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function DonationDetails() {
         return;
       }
 
-      const response = await fetch(`http://192.168.0.104:5000/api/donations/${donationId}`);
+      const response = await fetch(`${config.BACKEND_URL}/api/donations/${donationId}`);
       
       if (response.ok) {
         const data = await response.json();

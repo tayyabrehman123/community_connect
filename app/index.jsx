@@ -4,11 +4,13 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from "@expo/vector-icons";
 import { Card, Button } from 'react-native-paper';
 import { UserContext } from '../components/AuthGate';
+import { useTranslation } from 'react-i18next';
 
 const Home = () => {
   const router = useRouter();
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const { user, loading } = useContext(UserContext);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -53,30 +55,22 @@ const Home = () => {
       >
         <TouchableOpacity style={styles.overlay} onPress={closeSidebar} activeOpacity={1}>
           <View style={styles.sidebarRight}>
-            <Text style={styles.sidebarTitle}>Menu</Text>
+            <Text style={styles.sidebarTitle}>{t('menu')}</Text>
             <TouchableOpacity style={styles.sidebarButton} onPress={goToSettings}>
               <Ionicons name="settings-outline" size={24} color="#006FFD" style={{ marginRight: 12 }} />
-              <Text style={styles.sidebarButtonText}>Settings</Text>
+              <Text style={styles.sidebarButtonText}>{t('settings')}</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
       </Modal>
 
       <ScrollView style={styles.container}>
-        {/* {user && (
-            <View style={{ flex: 1 }}>
-              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>
-                Welcome, {user.name} ({user.role})
-              </Text>
-            </View>
-          )} */}
         <View style={styles.header}>
-          
-          <Text style={styles.headerTitle}>Community Connect</Text>
+          <Text style={styles.headerTitle}>{t('community_connect')}</Text>
           <TouchableOpacity onPress={openSidebar} style={styles.menuButtonRight}>
             <Ionicons name="menu" size={28} color="#FFF" />
           </TouchableOpacity>
-          <Text style={styles.headerSubtitle}>Support for everyone in need</Text>
+          <Text style={styles.headerSubtitle}>{t('support_for_everyone')}</Text>
         </View>
         
         {user && (
@@ -107,13 +101,14 @@ const Home = () => {
               marginBottom: 4,
             }}
           >
-            Welcome,
+            {t('welcome')},
           </Text>
           <Text
             style={{
               color: '#333',
               fontSize: 20,
               fontWeight: '600',
+              //fontFamily: 'Poppins-Regular',
             }}
           >
             {user.name}
@@ -137,7 +132,7 @@ const Home = () => {
             />
           </View>
           
-          <Text style={styles.sectionTitle}>Services</Text>
+          <Text style={styles.sectionTitle}>{t('Services')}</Text>
     
           {user?.role === 'admin' && (
             <Button mode="contained" style={{ marginBottom: 16 }} onPress={() => router.push('/admin/manage-users')}>
@@ -149,16 +144,16 @@ const Home = () => {
             <Card style={styles.card}>
               <Card.Content style={styles.cardContent}>
                 <View style={styles.cardTextContainer}>
-                  <Text style={styles.cardTitle}>Shelters near you</Text>
+                  <Text style={styles.cardTitle}>{t('shelters_near_you')}</Text>
                   <Text style={styles.cardSubtitle}>
-                    Find nearby shelters with available space.
+                  {t('find_nearby_shelters')}
                   </Text>
                   <Button 
                     mode="contained" 
                     style={styles.button}
                     onPress={() => router.push('/shelter')}
                   >
-                    Search
+                   {t('Search')}
                   </Button>
                 </View>
                 <Image 
@@ -173,16 +168,16 @@ const Home = () => {
             <Card style={styles.card}>
               <Card.Content style={styles.cardContent}>
                 <View style={styles.cardTextContainer}>
-                  <Text style={styles.cardTitle}>FoodBanks near you</Text>
+                  <Text style={styles.cardTitle}>{t('foodbanks_near_you')}</Text>
                   <Text style={styles.cardSubtitle}>
-                    Find nearby available foodbanks.
+                  {t('find_nearby_foodbanks')}
                   </Text>
                   <Button 
                     mode="contained" 
                     style={styles.button}
                     onPress={() => router.push('/foodbank')}
                   >
-                    Search
+                    {t('Search')}
                   </Button>
                 </View>
                 <Image 
@@ -197,16 +192,16 @@ const Home = () => {
             <Card style={styles.card}>
               <Card.Content style={styles.cardContent}>
                 <View style={styles.cardTextContainer}>
-                  <Text style={styles.cardTitle}>Find Jobs near you</Text>
+                  <Text style={styles.cardTitle}>{t('find_jobs_near_you')}</Text>
                   <Text style={styles.cardSubtitle}>
-                    Find jobs according to your skills available.
+                  {t('find_jobs_description')} 
                   </Text>
                   <Button 
                     mode="contained" 
                     style={styles.button}
                     onPress={() => router.push('/job_recomand')}
                   >
-                    Search
+                    {t('Search')}
                   </Button>
                 </View>
                 <Image 
@@ -221,16 +216,16 @@ const Home = () => {
             <Card style={styles.card}>
               <Card.Content style={styles.cardContent}>
                 <View style={styles.cardTextContainer}>
-                  <Text style={styles.cardTitle}>Food donation</Text>
+                  <Text style={styles.cardTitle}>{t('food_donation')}</Text>
                   <Text style={styles.cardSubtitle}>
-                    Donate food for the people in need.
+                  {t('donate_food_for_people_in_need')}
                   </Text>
                   <Button 
                     mode="contained" 
                     style={styles.button}
                     onPress={() => router.push('/food_donation')}
                   >
-                    Search
+                   {t('Search')} 
                   </Button>
                 </View>
                 <Image 
