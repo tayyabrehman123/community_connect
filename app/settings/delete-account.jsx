@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Switch } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Trash2, AlertTriangle } from 'lucide-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import config from '../../config';
 
 const DeleteAccount = () => {
   const router = useRouter();
@@ -25,21 +27,30 @@ const DeleteAccount = () => {
         {
           text: 'Delete Account',
           style: 'destructive',
-          onPress: () => {
-            // TODO: Implement account deletion functionality
-            Alert.alert(
-              'Account Deleted',
-              'Your account has been successfully deleted.',
-              [
-                {
-                  text: 'OK',
-                  onPress: () => {
-                    // TODO: Navigate to login or home screen
-                    router.replace('/');
+          onPress: async () => {
+            try {
+              const token = await AsyncStorage.getItem('token');
+              const response = await fetch(`${config.BACKEND_URL}/api/users/me`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+              });
+              if (!response.ok) throw new Error('Failed to delete account');
+              await AsyncStorage.clear();
+              Alert.alert(
+                'Account Deleted',
+                'Your account has been successfully deleted.',
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => {
+                      router.replace('/login');
+                    },
                   },
-                },
-              ],
-            );
+                ],
+              );
+            } catch (err) {
+              Alert.alert('Error', 'Failed to delete account.');
+            }
           },
         },
       ],

@@ -13,6 +13,28 @@ const ManageUsers = () => {
   const [newConfirmPassword, setNewConfirmPassword] = useState('');
   const [newRole, setNewRole] = useState('worker');
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [newProfession, setNewProfession] = useState('');
+  const [showProfessionDropdown, setShowProfessionDropdown] = useState(false);
+  const [editUser, setEditUser] = useState(null);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [showEditProfessionDropdown, setShowEditProfessionDropdown] = useState(false);
+  const [editNewPassword, setEditNewPassword] = useState('');
+  const [editConfirmNewPassword, setEditConfirmNewPassword] = useState('');
+
+  const professions = [
+    'Construction Worker',
+    'Plumber',
+    'Driver',
+    'Electrician',
+    'House Keeper',
+    'Painter',
+    'Carpenter',
+    'Cleaner',
+    'Mechanic',
+    'Welder',
+    'None'
+  ];
 
   useEffect(() => {
     fetchUsers();
@@ -90,6 +112,61 @@ const ManageUsers = () => {
     }
   };
 
+  const filteredUsers = users.filter(user =>
+    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (user.cnic && user.cnic.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const openEditModal = (user) => {
+    setEditUser({ ...user });
+    setEditModalVisible(true);
+  };
+
+  const handleUpdateUser = async () => {
+    if (!editUser.name || !editUser.email || !editUser.cnic) {
+      Alert.alert('Error', 'Please enter all fields.');
+      return;
+    }
+    if (editNewPassword || editConfirmNewPassword) {
+      if (!editNewPassword || !editConfirmNewPassword) {
+        Alert.alert('Error', 'Please fill both password fields.');
+        return;
+      }
+      if (editNewPassword !== editConfirmNewPassword) {
+        Alert.alert('Error', 'Passwords do not match.');
+        return;
+      }
+    }
+    try {
+      const updateBody = {
+        name: editUser.name,
+        email: editUser.email,
+        cnic: editUser.cnic,
+        role: editUser.role,
+        profession: editUser.profession || ''
+      };
+      if (editNewPassword && editNewPassword === editConfirmNewPassword) {
+        updateBody.password = editNewPassword;
+      }
+      const response = await fetch(`${config.BACKEND_URL}/api/users/${editUser._id || editUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateBody)
+      });
+      if (!response.ok) throw new Error('Failed to update user');
+      const updatedUser = await response.json();
+      setUsers(users.map(u => (u._id === updatedUser._id ? updatedUser : u)));
+      setEditModalVisible(false);
+      setEditUser(null);
+      setEditNewPassword('');
+      setEditConfirmNewPassword('');
+      Alert.alert('Success', 'User updated successfully');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update user: ' + error.message);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -101,9 +178,15 @@ const ManageUsers = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Manage Users</Text>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search by name, email, or CNIC"
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
       <Button mode="contained" style={styles.addButton} onPress={() => setModalVisible(true)}>Add User</Button>
       <FlatList
-        data={users}
+        data={filteredUsers}
         keyExtractor={(item, index) => item._id?.toString() || item.id?.toString() || index.toString()}
         renderItem={({ item }) => (
           <Card style={styles.userCard}>
@@ -115,6 +198,7 @@ const ManageUsers = () => {
                 <Text style={styles.userRole}>Role: {item.role}</Text>
               </View>
               <IconButton icon="delete" color="#FF5252" onPress={() => handleRemove(item._id || item.id)} />
+              <IconButton icon="pencil" color="#006FFD" onPress={() => openEditModal(item)} />
             </Card.Content>
           </Card>
         )}
@@ -174,8 +258,146 @@ const ManageUsers = () => {
                 <Text style={newRole === 'employer' ? styles.selectedRoleText : styles.roleText}>Employer</Text>
               </TouchableOpacity>
             </View>
+            {newRole === 'worker' && (
+              <>
+                <TouchableOpacity
+                  style={[styles.input, { justifyContent: 'center' }]}
+                  onPress={() => setShowProfessionDropdown(true)}
+                >
+                  <Text style={{ color: newProfession ? '#333' : '#999' }}>
+                    {newProfession || 'Select Profession'}
+                  </Text>
+                </TouchableOpacity>
+                <Modal
+                  visible={showProfessionDropdown}
+                  transparent
+                  animationType="fade"
+                  onRequestClose={() => setShowProfessionDropdown(false)}
+                >
+                  <TouchableOpacity style={styles.modalOverlay} onPress={() => setShowProfessionDropdown(false)}>
+                    <View style={styles.dropdownModal}>
+                      <FlatList
+                        data={professions}
+                        keyExtractor={(item) => item}
+                        renderItem={({ item }) => (
+                          <TouchableOpacity
+                            style={styles.dropdownItem}
+                            onPress={() => {
+                              setNewProfession(item);
+                              setShowProfessionDropdown(false);
+                            }}
+                          >
+                            <Text style={styles.dropdownItemText}>{item}</Text>
+                          </TouchableOpacity>
+                        )}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                </Modal>
+              </>
+            )}
             <Button mode="contained" style={styles.button} onPress={handleAddUser}>Add User</Button>
             <Button mode="text" onPress={() => setModalVisible(false)}>Cancel</Button>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+      <Modal
+        visible={editModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setEditModalVisible(false)}
+      >
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPressOut={() => setEditModalVisible(false)}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Edit User</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Name"
+              value={editUser?.name || ''}
+              onChangeText={name => setEditUser({ ...editUser, name })}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={editUser?.email || ''}
+              onChangeText={email => setEditUser({ ...editUser, email })}
+              keyboardType="email-address"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="CNIC"
+              value={editUser?.cnic || ''}
+              onChangeText={cnic => setEditUser({ ...editUser, cnic })}
+            />
+            <Text style={{ alignSelf: 'flex-start', marginBottom: 8, fontWeight: 'bold', color: '#333' }}>Role:</Text>
+            <View style={{ flexDirection: 'row', marginBottom: 16, alignSelf: 'flex-start' }}>
+              <TouchableOpacity onPress={() => setEditUser({ ...editUser, role: 'worker' })} style={[styles.roleButton, editUser?.role === 'worker' && styles.selectedRole]}>
+                <Text style={editUser?.role === 'worker' ? styles.selectedRoleText : styles.roleText}>Worker</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setEditUser({ ...editUser, role: 'donor' })} style={[styles.roleButton, editUser?.role === 'donor' && styles.selectedRole]}>
+                <Text style={editUser?.role === 'donor' ? styles.selectedRoleText : styles.roleText}>Donor</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setEditUser({ ...editUser, role: 'employer' })} style={[styles.roleButton, editUser?.role === 'employer' && styles.selectedRole]}>
+                <Text style={editUser?.role === 'employer' ? styles.selectedRoleText : styles.roleText}>Employer</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setEditUser({ ...editUser, role: 'admin' })} style={[styles.roleButton, editUser?.role === 'admin' && styles.selectedRole]}>
+                <Text style={editUser?.role === 'admin' ? styles.selectedRoleText : styles.roleText}>Admin</Text>
+              </TouchableOpacity>
+            </View>
+            {editUser?.role === 'worker' && (
+              <>
+                <TouchableOpacity
+                  style={[styles.input, { justifyContent: 'center' }]}
+                  onPress={() => setShowEditProfessionDropdown(true)}
+                >
+                  <Text style={{ color: editUser?.profession ? '#333' : '#999' }}>
+                    {editUser?.profession || 'Select Profession'}
+                  </Text>
+                </TouchableOpacity>
+                <Modal
+                  visible={showEditProfessionDropdown}
+                  transparent
+                  animationType="fade"
+                  onRequestClose={() => setShowEditProfessionDropdown(false)}
+                >
+                  <TouchableOpacity style={styles.modalOverlay} onPress={() => setShowEditProfessionDropdown(false)}>
+                    <View style={styles.dropdownModal}>
+                      <FlatList
+                        data={professions}
+                        keyExtractor={(item) => item}
+                        renderItem={({ item }) => (
+                          <TouchableOpacity
+                            style={styles.dropdownItem}
+                            onPress={() => {
+                              setEditUser({ ...editUser, profession: item });
+                              setShowEditProfessionDropdown(false);
+                            }}
+                          >
+                            <Text style={styles.dropdownItemText}>{item}</Text>
+                          </TouchableOpacity>
+                        )}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                </Modal>
+              </>
+            )}
+            <TextInput
+              style={styles.input}
+              placeholder="New Password (leave blank to keep unchanged)"
+              value={editNewPassword}
+              onChangeText={setEditNewPassword}
+              secureTextEntry
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm New Password"
+              value={editConfirmNewPassword}
+              onChangeText={setEditConfirmNewPassword}
+              secureTextEntry
+            />
+            <Button mode="contained" style={styles.button} onPress={handleUpdateUser}>Save Changes</Button>
+            <Button mode="text" onPress={() => setEditModalVisible(false)}>Cancel</Button>
           </View>
         </TouchableOpacity>
       </Modal>
@@ -286,6 +508,33 @@ const styles = StyleSheet.create({
   selectedRoleText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  searchInput: {
+    width: '100%',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 16,
+    fontSize: 16,
+  },
+  dropdownModal: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 8,
+    width: '80%',
+    alignSelf: 'center',
+    maxHeight: 300,
+    elevation: 10,
+  },
+  dropdownItem: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  dropdownItemText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
 

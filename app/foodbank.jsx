@@ -4,8 +4,10 @@ import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { Ionicons } from '@expo/vector-icons';
 import config from '../config';
+import { useTranslation } from 'react-i18next';
 
 export default function Foodbank() {
+  const { t } = useTranslation();
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [foodbanks, setFoodbanks] = useState([]);
@@ -15,7 +17,7 @@ export default function Foodbank() {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission denied", "Location permission is required to show your position.");
+        Alert.alert(t('permission_denied'), t('location_permission_required'));
         setLoading(false);
         return;
       }
@@ -34,7 +36,7 @@ export default function Foodbank() {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color="#006FFD" />
-        <Text style={styles.loadingText}>Please wait, finding foodbanks near your location</Text>
+        <Text style={styles.loadingText}>{t('finding_foodbanks')}</Text>
       </View>
     );
   }
@@ -43,8 +45,8 @@ export default function Foodbank() {
     <View style={{ flex: 1, backgroundColor: '#fff' }} >
       <View style={styles.header}>
         <View>
-          <Text style={styles.headerTitle}>Foodbanks</Text>
-          <Text style={styles.headerSubtitle}>Find nearby foodbanks</Text>
+          <Text style={styles.headerTitle}>{t('foodbanks')}</Text>
+          <Text style={styles.headerSubtitle}>{t('find_nearby_foodbanks')}</Text>
         </View>
         <View style={styles.profileButton}>
           <Ionicons name="person" size={24} color="#B3DAFF" />
@@ -88,13 +90,13 @@ export default function Foodbank() {
               <View style={styles.customCallout}>
                 <Text style={styles.calloutTitle}>{selectedFoodbank.name}</Text>
                 <Text style={styles.calloutAddress}>{selectedFoodbank.address}</Text>
-                <Text style={styles.calloutDetail}>Accommodation: {selectedFoodbank.accommodation}</Text>
-                <Text style={styles.calloutDetail}>Timings: {selectedFoodbank.timings}</Text>
+                <Text style={styles.calloutDetail}>{t('accommodation')}: {selectedFoodbank.accommodation}</Text>
+                <Text style={styles.calloutDetail}>{t('timings')}: {selectedFoodbank.timings}</Text>
                 <TouchableOpacity
                   style={styles.closeButton}
                   onPress={() => setSelectedFoodbank(null)}
                 >
-                  <Text style={styles.closeButtonText}>Close</Text>
+                  <Text style={styles.closeButtonText}>{t('close')}</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -102,7 +104,7 @@ export default function Foodbank() {
         </Modal>
       </View>
       <View style={styles.textcont}>
-      <Text style={styles.texts}>choose any near by foodbanks</Text>
+      <Text style={styles.texts}>{t('choose_nearby_foodbanks')}</Text>
       </View>
     </View>
   );

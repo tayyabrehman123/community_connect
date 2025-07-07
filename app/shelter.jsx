@@ -4,8 +4,10 @@ import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { Ionicons } from '@expo/vector-icons';
 import config from '../config';
+import { useTranslation } from 'react-i18next';
 
 export default function Shelter() {
+  const { t } = useTranslation();
   const [location, setLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [shelters, setShelters] = useState([]);
@@ -15,7 +17,7 @@ export default function Shelter() {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission denied", "Location permission is required to show your position.");
+        Alert.alert(t('permission_denied'), t('location_permission_required'));
         setLoading(false);
         return;
       }
@@ -28,13 +30,13 @@ export default function Shelter() {
       .then(res => res.json())
       .then(data => setShelters(data))
       .catch(err => console.log(err));
-  }, []);
+  }, [t]);
 
   if (loading) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color="#006FFD" />
-        <Text style={styles.loadingText}>Please wait, finding shelters near your location</Text>
+        <Text style={styles.loadingText}>{t('finding_shelters')}</Text>
       </View>
     );
   }
@@ -43,8 +45,8 @@ export default function Shelter() {
     <View style={{ flex: 1, backgroundColor: '#fff' }} >
       <View style={styles.header}>
         <View>
-          <Text style={styles.headerTitle}>Shelters</Text>
-          <Text style={styles.headerSubtitle}>Find nearby Shelters</Text>
+          <Text style={styles.headerTitle}>{t('shelters')}</Text>
+          <Text style={styles.headerSubtitle}>{t('find_nearby_shelters')}</Text>
         </View>
         <View style={styles.profileButton}>
           <Ionicons name="person" size={24} color="#B3DAFF" />
@@ -88,13 +90,13 @@ export default function Shelter() {
               <View style={styles.customCallout}>
                 <Text style={styles.calloutTitle}>{selectedShelter.name}</Text>
                 <Text style={styles.calloutAddress}>{selectedShelter.address}</Text>
-                <Text style={styles.calloutDetail}>Accommodation: {selectedShelter.accommodation}</Text>
-                <Text style={styles.calloutDetail}>Timings: {selectedShelter.timings}</Text>
+                <Text style={styles.calloutDetail}>{t('accommodation')}: {selectedShelter.accommodation}</Text>
+                <Text style={styles.calloutDetail}>{t('timings')}: {selectedShelter.timings}</Text>
                 <TouchableOpacity
                   style={styles.closeButton}
                   onPress={() => setSelectedShelter(null)}
                 >
-                  <Text style={styles.closeButtonText}>Close</Text>
+                  <Text style={styles.closeButtonText}>{t('close')}</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -102,7 +104,7 @@ export default function Shelter() {
         </Modal>
       </View>
       <View style={styles.textcont}>
-      <Text style={styles.texts}>choose any near by shelters </Text>
+      <Text style={styles.texts}>{t('choose_nearby_shelters')}</Text>
       </View>
     </View>
   );

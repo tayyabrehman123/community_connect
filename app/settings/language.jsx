@@ -6,15 +6,7 @@ import i18n from '../../i18n';
 
 const languages = [
   { code: 'en', name: 'English', nativeName: 'English' },
-  // { code: 'es', name: 'Spanish', nativeName: 'Español' },
-  // { code: 'fr', name: 'French', nativeName: 'Français' },
-  // { code: 'de', name: 'German', nativeName: 'Deutsch' },
-  // { code: 'zh', name: 'Chinese', nativeName: '中文' },
-  // { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
-  // { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
-  // { code: 'bn', name: 'Bengali', nativeName: 'বাংলা' },
   { code: 'ur', name: 'Urdu', nativeName: 'اردو' },
-  // { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
 ];
 
 const LanguageSettings = () => {
@@ -145,3 +137,20 @@ const styles = StyleSheet.create({
 });
 
 export default LanguageSettings; 
+
+
+
+
+
+// const languages = [
+//   { code: 'en', name: 'English', nativeName: 'English' },
+//   // { code: 'es', name: 'Spanish', nativeName: 'Español' },
+//   // { code: 'fr', name: 'French', nativeName: 'Français' },
+//   // { code: 'de', name: 'German', nativeName: 'Deutsch' },
+//   // { code: 'zh', name: 'Chinese', nativeName: '中文' },
+//   // { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
+//   // { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
+//   // { code: 'bn', name: 'Bengali', nativeName: 'বাংলা' },
+//   { code: 'ur', name: 'Urdu', nativeName: 'اردو' },
+//   // { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
+// ];

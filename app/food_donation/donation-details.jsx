@@ -208,10 +208,10 @@ export default function DonationDetails() {
             <Text style={styles.buttonText}>Call Donor</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.navigateButton} onPress={handleNavigate}>
+          {/* <TouchableOpacity style={styles.navigateButton} onPress={handleNavigate}>
             <Ionicons name="navigate" size={20} color="#fff" />
             <Text style={styles.buttonText}>Navigate</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </ScrollView>
     </View>
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
   actionButtons: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 20,
+    marginBottom: 50,
   },
   callButton: {
     flex: 1,

@@ -245,7 +245,7 @@ const AddDonation = () => {
           {/* Map Picker for Location */}
           <Text style={{ alignSelf: 'flex-start', marginBottom: 8 }}>Tap on the map to select donation location:</Text>
           <MapView
-            style={{ width: '100%', height: 250, marginBottom: 12, borderRadius: 12 }}
+            style={{ width: '100%', height: 500, marginBottom: 12, borderRadius: 12 }}
             region={mapRegion}
             onPress={e => {
               setFormData({
@@ -327,14 +327,14 @@ const AddDonation = () => {
             </View>
           )}
 
-          {/* Image Upload */}
+          {/* Image Upload
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Add Photo (Optional)</Text>
             <TouchableOpacity style={styles.imageUploadButton}>
               <Ionicons name="camera" size={24} color="#666" />
               <Text style={styles.imageUploadText}>Upload Photo</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
 
           {/* Submit Button */}
           <TouchableOpacity 

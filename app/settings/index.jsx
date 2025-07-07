@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserContext } from '../../components/AuthGate';
 import { ArrowLeft} from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 
 // import { signOut } from 'firebase/auth';
 // import { auth } from '../../firebaseConfig';
@@ -13,29 +14,29 @@ const settingsSections = [
   {
     id: 'profile',
     icon: User,
-    title: 'Edit Profile',
-    description: 'Update your personal information',
+    title: 'settings_edit_profile',
+    description: 'settings_update_personal_info',
     route: '/settings/profile'
   },
   {
     id: 'password',
     icon: Lock,
-    title: 'Change Password',
-    description: 'Update your security credentials',
+    title: 'settings_change_password',
+    description: 'settings_update_security',
     route: '/settings/password'
   },
   {
     id: 'language',
     icon: Globe,
-    title: 'Language Preference',
-    description: 'Choose your preferred language',
+    title: 'settings_language_preference',
+    description: 'settings_choose_language',
     route: '/settings/language'
   },
   {
     id: 'notifications',
     icon: Bell,
-    title: 'Notification Settings',
-    description: 'Manage your notifications',
+    title: 'settings_notification_settings',
+    description: 'settings_manage_notifications',
     route: '/settings/notifications'
   },
   // {
@@ -55,8 +56,8 @@ const settingsSections = [
   {
     id: 'delete',
     icon: Trash2,
-    title: 'Delete Account',
-    description: 'Permanently delete your account',
+    title: 'settings_delete_account',
+    description: 'settings_delete_account_desc',
     route: '/settings/delete-account',
     danger: true,
   },
@@ -65,15 +66,16 @@ const settingsSections = [
 const Settings = () => {
   const router = useRouter();
   const { user, setUser } = useContext(UserContext);
+  const { t } = useTranslation();
 
   const handleLogout = async () => {
     Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
+      t('settings_logout'),
+      t('settings_logout_confirm'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('cancel'), style: 'cancel' },
         {
-          text: 'Logout',
+          text: t('settings_logout'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -81,7 +83,7 @@ const Settings = () => {
               setUser(null);
               router.replace('/login', { reset: true });
             } catch (error) {
-              Alert.alert('Error', 'Failed to logout: ' + error.message);
+              Alert.alert(t('error'), t('settings_logout_failed') + error.message);
             }
           }
         }
@@ -95,8 +97,8 @@ const Settings = () => {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.title}>Settings</Text>
-        <Text style={styles.stitle}>Manage your account preferences</Text>
+        <Text style={styles.title}>{t('settings')}</Text>
+        <Text style={styles.stitle}>{t('settings_manage_preferences')}</Text>
       </View>
       {/* <View style={styles.header}>
         <TouchableOpacity 
@@ -134,10 +136,10 @@ const Settings = () => {
                     styles.settingTitle,
                     section.danger && styles.dangerText,
                   ]}>
-                  {section.title}
+                  {t(section.title)}
                 </Text>
                 <Text style={styles.settingDescription}>
-                  {section.description}
+                  {t(section.description)}
                 </Text>
               </View>
             </View>
@@ -149,7 +151,7 @@ const Settings = () => {
         ))}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <LogOut size={22} color="#fff" style={{ marginRight: 10 }} />
-          <Text style={styles.logoutButtonText}>Logout</Text>
+          <Text style={styles.logoutButtonText}>{t('settings_logout')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

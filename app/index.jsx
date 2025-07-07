@@ -95,7 +95,7 @@ const Home = () => {
         >
           <Text
             style={{
-              color: '#1e90ff',
+              color: '#006FFD',
               fontSize: 24,
               fontWeight: 'bold',
               marginBottom: 4,
@@ -236,10 +236,10 @@ const Home = () => {
             </Card>
           </View>
           
-          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16, marginTop: 8 }}>
+          {/* <View style={{ flexDirection: 'row', gap: 12, marginBottom: 16, marginTop: 8 }}>
             <Button title="Login" onPress={goToLogin}>admin</Button>
             {/* <Button title="Login" onPress={goToSignup}>signup</Button> */}
-          </View>
+          {/* </View> */}
           
         </View>
         
